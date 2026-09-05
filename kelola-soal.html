@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Kelola Soal - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+
+        <a href="dashboard.html" class="menu">
+          🏠 Dashboard
+        </a>
+
+        <a href="asesmen.html" class="menu active">
+          📋 Asesmen
+        </a>
+
+        <a href="#" class="menu">
+          📚 Bank Soal
+        </a>
+
+        <a href="#" class="menu">
+          👨‍🎓 Siswa
+        </a>
+
+        <a href="#" class="menu">
+          🏫 Kelas
+        </a>
+
+        <a href="#" class="menu">
+          📊 Hasil
+        </a>
+
+        <a href="#" class="menu">
+          📈 Analisis Soal
+        </a>
+
+        <a href="#" class="menu">
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div>
+
+          <h1>Kelola Soal</h1>
+
+          <p>
+            Tambahkan dan atur soal untuk asesmen.
+          </p>
+
+        </div>
+
+        <div class="teacher-info">
+
+          👤 <span id="teacherName">
+            Guru
+          </span>
+
+        </div>
+
+      </header>
+
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <h2 id="assessmentTitle">
+              Memuat asesmen...
+            </h2>
+
+            <p id="assessmentInfo">
+              Memuat informasi asesmen...
+            </p>
+
+          </div>
+
+          <button
+            class="secondary-button"
+            id="kembaliButton"
+          >
+            ← Kembali
+          </button>
+
+        </div>
+
+      </section>
+
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <h2>Daftar Soal</h2>
+
+            <p>
+              Soal yang digunakan dalam asesmen ini.
+            </p>
+
+          </div>
+
+          <button
+            class="primary-button"
+            id="tambahSoalButton"
+          >
+            + Tambah Soal
+          </button>
+
+        </div>
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>No.</th>
+                <th>Soal</th>
+                <th>Tipe</th>
+                <th>Bobot</th>
+                <th>Aksi</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="soalTable">
+
+              <tr>
+
+                <td
+                  colspan="5"
+                  class="empty-table"
+                >
+                  Belum ada soal.
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script
+    type="module"
+    src="kelola-soal.js"
+  ></script>
+
+</body>
+
+</html>
