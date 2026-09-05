@@ -12,34 +12,37 @@ const loginForm = document.getElementById('loginForm');
 const message = document.getElementById('message');
 const loginButton = document.getElementById('loginButton');
 
-loginForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
+if (loginForm) {
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  loginForm.addEventListener('submit', async (event) => {
 
-  loginButton.disabled = true;
-  loginButton.textContent = 'Memproses...';
-  message.textContent = '';
+    event.preventDefault();
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    loginButton.disabled = true;
+    loginButton.textContent = 'Memproses...';
+    message.textContent = '';
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      message.textContent = 'Login gagal: ' + error.message;
+      loginButton.disabled = false;
+      loginButton.textContent = 'Masuk';
+      return;
+    }
+
+    message.textContent = 'Login berhasil!';
+
+    setTimeout(() => {
+      window.location.href = 'dashboard.html';
+    }, 500);
+
   });
 
-  if (error) {
-    message.textContent = 'Login gagal: ' + error.message;
-    loginButton.disabled = false;
-    loginButton.textContent = 'Masuk';
-    return;
-  }
-
-  message.textContent = 'Login berhasil!';
-
-console.log('User berhasil login:', data.user);
-
-setTimeout(() => {
-  alert('PERINTAH PINDAH HALAMAN DIJALANKAN');
-  window.location.href = 'dashboard.html';
-}, 500);
-});
+}
