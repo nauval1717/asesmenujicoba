@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Kelola Asesmen - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+
+        <a href="dashboard.html" class="menu">
+          🏠 Dashboard
+        </a>
+
+        <a href="asesmen.html" class="menu active">
+          📋 Asesmen
+        </a>
+
+        <a href="#" class="menu">
+          📚 Bank Soal
+        </a>
+
+        <a href="#" class="menu">
+          👨‍🎓 Siswa
+        </a>
+
+        <a href="#" class="menu">
+          🏫 Kelas
+        </a>
+
+        <a href="#" class="menu">
+          📊 Hasil
+        </a>
+
+        <a href="#" class="menu">
+          📈 Analisis Soal
+        </a>
+
+        <a href="#" class="menu">
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <!-- KONTEN UTAMA -->
+    <main class="main-content">
+
+      <!-- HEADER -->
+      <header class="topbar">
+
+        <div>
+
+          <h1>Kelola Asesmen</h1>
+
+          <p>
+            Kelola pengaturan dan soal asesmen.
+          </p>
+
+        </div>
+
+        <div class="teacher-info">
+
+          👤 <span id="teacherName">
+            Guru
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- INFORMASI ASESMEN -->
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <h2 id="assessmentTitle">
+              Memuat asesmen...
+            </h2>
+
+            <p id="assessmentInfo">
+              Memuat informasi asesmen...
+            </p>
+
+          </div>
+
+          <button
+            class="secondary-button"
+            onclick="window.location.href='asesmen.html'"
+          >
+            ← Kembali
+          </button>
+
+        </div>
+
+
+        <!-- RINGKASAN -->
+        <div class="stats">
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              📝
+            </div>
+
+            <div>
+
+              <p>Jumlah Soal</p>
+
+              <h2 id="questionCount">
+                0
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              ⏱️
+            </div>
+
+            <div>
+
+              <p>Durasi</p>
+
+              <h2 id="duration">
+                -
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              🔑
+            </div>
+
+            <div>
+
+              <p>Token</p>
+
+              <h2 id="tokenStatus">
+                Belum
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              📌
+            </div>
+
+            <div>
+
+              <p>Status</p>
+
+              <h2 id="assessmentStatus">
+                Draft
+              </h2>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- MENU KELOLA -->
+      <section class="content-card">
+
+        <h2>Pengaturan Asesmen</h2>
+
+        <div class="page-header">
+
+          <div>
+
+            <h2>📝 Soal Asesmen</h2>
+
+            <p>
+              Tambahkan dan atur soal yang akan dikerjakan siswa.
+            </p>
+
+          </div>
+
+          <button
+            class="primary-button"
+            id="kelolaSoalButton"
+          >
+            Kelola Soal
+          </button>
+
+        </div>
+
+
+        <div class="page-header">
+
+          <div>
+
+            <h2>🔑 Token Asesmen</h2>
+
+            <p>
+              Buat token yang digunakan siswa untuk masuk ke asesmen.
+            </p>
+
+          </div>
+
+          <button
+            class="primary-button"
+            id="tokenButton"
+          >
+            Atur Token
+          </button>
+
+        </div>
+
+
+        <div class="page-header">
+
+          <div>
+
+            <h2>⚙️ Pengaturan</h2>
+
+            <p>
+              Atur durasi, pengacakan soal, pengacakan pilihan jawaban,
+              dan keamanan asesmen.
+            </p>
+
+          </div>
+
+          <button
+            class="primary-button"
+            id="pengaturanButton"
+          >
+            Pengaturan
+          </button>
+
+        </div>
+
+
+        <div class="page-header">
+
+          <div>
+
+            <h2>🚀 Status Asesmen</h2>
+
+            <p>
+              Asesmen masih dalam status draft dan belum dapat dikerjakan siswa.
+            </p>
+
+          </div>
+
+          <button
+            class="primary-button"
+            id="aktifkanButton"
+          >
+            Aktifkan Asesmen
+          </button>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script type="module" src="kelola-asesmen.js"></script>
+
+</body>
+
+</html>
