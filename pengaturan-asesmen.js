@@ -3,6 +3,10 @@ import { supabase } from './supabase.js';
 const params = new URLSearchParams(window.location.search);
 const assessmentId = params.get('id');
 
+// ===============================
+// ELEMEN HALAMAN
+// ===============================
+
 const assessmentTitle = document.getElementById('assessmentTitle');
 const assessmentInfo = document.getElementById('assessmentInfo');
 const teacherName = document.getElementById('teacherName');
@@ -12,18 +16,23 @@ const shuffleQuestions = document.getElementById('shuffleQuestions');
 const shuffleOptions = document.getElementById('shuffleOptions');
 const keepStimulusOrder = document.getElementById('keepStimulusOrder');
 
-// Pengaturan anti-kecurangan
+// Anti-kecurangan
 const antiCheatEnabled = document.getElementById('antiCheatEnabled');
 const requireFullscreen = document.getElementById('requireFullscreen');
 const detectTabSwitch = document.getElementById('detectTabSwitch');
 const detectFocusLoss = document.getElementById('detectFocusLoss');
 const maxViolations = document.getElementById('maxViolations');
-const autoSubmitOnViolation = document.getElementById('autoSubmitOnViolation');
+const autoSubmitOnViolation =
+  document.getElementById('autoSubmitOnViolation');
 
 const simpanButton = document.getElementById('simpanButton');
 const statusMessage = document.getElementById('statusMessage');
 const kembaliButton = document.getElementById('kembaliButton');
-const logoutButton = document.getElementById('logoutButton');
+
+
+// ===============================
+// CEK LOGIN
+// ===============================
 
 async function checkLogin() {
   const {
@@ -39,10 +48,21 @@ async function checkLogin() {
   return user;
 }
 
+
+// ===============================
+// STATUS
+// ===============================
+
 function showStatus(message, type) {
   statusMessage.textContent = message;
-  statusMessage.className = `status-message ${type}`;
+  statusMessage.className =
+    `status-message ${type}`;
 }
+
+
+// ===============================
+// FORMAT DATA
+// ===============================
 
 function getTypeName(type) {
   const types = {
@@ -56,12 +76,28 @@ function getTypeName(type) {
   return types[type] || type || '-';
 }
 
+
 function getDurationText(minutes) {
-  if (!minutes) return 'Tidak dibatasi';
+  if (!minutes) {
+    return 'Tidak dibatasi';
+  }
+
   return `${minutes} menit`;
 }
 
+
+// ===============================
+// LOAD DATA ASESMEN
+// ===============================
+
 async function loadAssessment(user) {
+
+  assessmentTitle.textContent =
+    'Memuat asesmen...';
+
+  assessmentInfo.textContent =
+    'Memuat informasi asesmen...';
+
   const { data: assessment, error } = await supabase
     .from('assessments')
     .select(`
@@ -74,8 +110,6 @@ async function loadAssessment(user) {
       status,
       subject_id,
       class_id,
-      subjects ( name ),
-      classes ( name ),
       shuffle_questions,
       shuffle_options,
       keep_stimulus_order,
@@ -91,20 +125,76 @@ async function loadAssessment(user) {
     .single();
 
   if (error) {
-    console.error('Gagal mengambil asesmen:', error);
 
-    alert(
-      'Asesmen tidak ditemukan atau Anda tidak memiliki akses.'
+    console.error(
+      'Gagal mengambil asesmen:',
+      error
     );
 
-    window.location.href = 'asesmen.html';
+    assessmentTitle.textContent =
+      'Gagal memuat asesmen';
+
+    assessmentInfo.textContent =
+      error.message;
+
+    showStatus(
+      `❌ Gagal memuat asesmen: ${error.message}`,
+      'error'
+    );
+
     return null;
   }
 
-  assessmentTitle.textContent = assessment.title;
 
-  const subjectName = assessment.subjects?.name || '-';
-  const className = assessment.classes?.name || '-';
+  // ===============================
+  // DATA UTAMA ASESMEN
+  // ===============================
+
+  assessmentTitle.textContent =
+    assessment.title || 'Tanpa Judul';
+
+
+  // ===============================
+  // MATA PELAJARAN
+  // ===============================
+
+  let subjectName = '-';
+
+  if (assessment.subject_id) {
+
+    const { data: subject } = await supabase
+      .from('subjects')
+      .select('name')
+      .eq('id', assessment.subject_id)
+      .maybeSingle();
+
+    subjectName =
+      subject?.name || '-';
+  }
+
+
+  // ===============================
+  // KELAS
+  // ===============================
+
+  let className = '-';
+
+  if (assessment.class_id) {
+
+    const { data: classData } = await supabase
+      .from('classes')
+      .select('name')
+      .eq('id', assessment.class_id)
+      .maybeSingle();
+
+    className =
+      classData?.name || '-';
+  }
+
+
+  // ===============================
+  // INFORMASI ASESMEN
+  // ===============================
 
   assessmentInfo.textContent =
     `${getTypeName(assessment.type)} • ` +
@@ -112,7 +202,11 @@ async function loadAssessment(user) {
     `${className} • ` +
     `${getDurationText(assessment.duration_minutes)}`;
 
-  // Pengaturan soal
+
+  // ===============================
+  // PENGATURAN SOAL
+  // ===============================
+
   shuffleQuestions.checked =
     assessment.shuffle_questions ?? true;
 
@@ -122,7 +216,11 @@ async function loadAssessment(user) {
   keepStimulusOrder.checked =
     assessment.keep_stimulus_order ?? true;
 
-  // Pengaturan anti-kecurangan
+
+  // ===============================
+  // ANTI-KECURANGAN
+  // ===============================
+
   antiCheatEnabled.checked =
     assessment.anti_cheat_enabled ?? true;
 
@@ -141,10 +239,17 @@ async function loadAssessment(user) {
   autoSubmitOnViolation.checked =
     assessment.auto_submit_on_violation ?? true;
 
+
   return assessment;
 }
 
+
+// ===============================
+// LOAD PROFIL GURU
+// ===============================
+
 async function loadTeacherProfile(user) {
+
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('full_name')
@@ -152,10 +257,15 @@ async function loadTeacherProfile(user) {
     .single();
 
   if (error) {
+
     console.error(
       'Gagal mengambil profil guru:',
       error
     );
+
+    teacherName.textContent =
+      'Guru';
+
     return;
   }
 
@@ -163,45 +273,72 @@ async function loadTeacherProfile(user) {
     profile?.full_name || 'Guru';
 }
 
+
+// ===============================
+// SIMPAN PENGATURAN
+// ===============================
+
 async function saveSettings(user) {
-  let violationLimit = Number(maxViolations.value);
 
-  // Validasi batas pelanggaran
-  if (!Number.isInteger(violationLimit)) {
+  const violationLimit =
+    Number(maxViolations.value);
+
+
+  // Validasi
+  if (
+    !Number.isInteger(violationLimit) ||
+    violationLimit < 1 ||
+    violationLimit > 20
+  ) {
+
     showStatus(
-      '❌ Batas pelanggaran harus berupa angka bulat.',
+      '❌ Batas pelanggaran harus berupa angka 1 sampai 20.',
       'error'
     );
+
     return;
   }
 
-  if (violationLimit < 1 || violationLimit > 20) {
-    showStatus(
-      '❌ Batas pelanggaran harus antara 1 sampai 20.',
-      'error'
-    );
-    return;
-  }
 
   simpanButton.disabled = true;
-  simpanButton.textContent = '⏳ Menyimpan...';
-  statusMessage.className = 'status-message';
+
+  simpanButton.textContent =
+    '⏳ Menyimpan...';
+
 
   const settings = {
-    // Pengaturan soal
-    shuffle_questions: shuffleQuestions.checked,
-    shuffle_options: shuffleOptions.checked,
-    keep_stimulus_order: keepStimulusOrder.checked,
 
-    // Pengaturan anti-kecurangan
-    anti_cheat_enabled: antiCheatEnabled.checked,
-    require_fullscreen: requireFullscreen.checked,
-    detect_tab_switch: detectTabSwitch.checked,
-    detect_focus_loss: detectFocusLoss.checked,
-    max_violations: violationLimit,
+    // Pengaturan soal
+    shuffle_questions:
+      shuffleQuestions.checked,
+
+    shuffle_options:
+      shuffleOptions.checked,
+
+    keep_stimulus_order:
+      keepStimulusOrder.checked,
+
+
+    // Anti-kecurangan
+    anti_cheat_enabled:
+      antiCheatEnabled.checked,
+
+    require_fullscreen:
+      requireFullscreen.checked,
+
+    detect_tab_switch:
+      detectTabSwitch.checked,
+
+    detect_focus_loss:
+      detectFocusLoss.checked,
+
+    max_violations:
+      violationLimit,
+
     auto_submit_on_violation:
       autoSubmitOnViolation.checked
   };
+
 
   const { error } = await supabase
     .from('assessments')
@@ -209,23 +346,27 @@ async function saveSettings(user) {
     .eq('id', assessmentId)
     .eq('teacher_id', user.id);
 
+
   if (error) {
+
     console.error(
       'Gagal menyimpan pengaturan:',
       error
     );
 
     showStatus(
-      `❌ Gagal menyimpan pengaturan: ${error.message}`,
+      `❌ Gagal menyimpan: ${error.message}`,
       'error'
     );
 
     simpanButton.disabled = false;
+
     simpanButton.textContent =
       '💾 Simpan Pengaturan';
 
     return;
   }
+
 
   showStatus(
     '✅ Pengaturan berhasil disimpan.',
@@ -233,37 +374,64 @@ async function saveSettings(user) {
   );
 
   simpanButton.disabled = false;
+
   simpanButton.textContent =
     '💾 Simpan Pengaturan';
 }
 
-kembaliButton.addEventListener('click', () => {
-  window.location.href =
-    `kelola-asesmen.html?id=${assessmentId}`;
-});
 
-logoutButton.addEventListener('click', async () => {
-  await supabase.auth.signOut();
-  window.location.href = 'index.html';
-});
+// ===============================
+// TOMBOL KEMBALI
+// ===============================
+
+kembaliButton.addEventListener(
+  'click',
+  () => {
+
+    window.location.href =
+      `kelola-asesmen.html?id=${assessmentId}`;
+
+  }
+);
+
+
+// ===============================
+// INIT
+// ===============================
 
 async function init() {
+
   if (!assessmentId) {
-    alert('ID asesmen tidak ditemukan.');
-    window.location.href = 'asesmen.html';
+
+    alert(
+      'ID asesmen tidak ditemukan.'
+    );
+
+    window.location.href =
+      'asesmen.html';
+
     return;
   }
 
-  const user = await checkLogin();
 
-  if (!user) return;
+  const user =
+    await checkLogin();
+
+  if (!user) {
+    return;
+  }
+
 
   await loadTeacherProfile(user);
+
   await loadAssessment(user);
 
-  simpanButton.addEventListener('click', () => {
-    saveSettings(user);
-  });
+
+  simpanButton.addEventListener(
+    'click',
+    () => saveSettings(user)
+  );
 }
+
 
 init();
