@@ -15,6 +15,8 @@ if (!user) {
 // AMBIL DATA PROFIL GURU
 if (user) {
 
+  console.log('USER ID:', user.id);
+
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('full_name')
