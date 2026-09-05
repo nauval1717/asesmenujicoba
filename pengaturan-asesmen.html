@@ -4,59 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Pengaturan Asesmen - Asesmen Online</title>
+  <title>Pengaturan Asesmen</title>
 
   <link rel="stylesheet" href="dashboard.css">
 
   <style>
-    .setting-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 18px;
+    .settings-section {
       background: #ffffff;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     }
 
-    .setting-item {
+    .settings-section h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .section-description {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .setting-row {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
       gap: 20px;
-      padding: 18px 0;
-      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 0;
+      border-bottom: 1px solid #eeeeee;
     }
 
-    .setting-item:first-child {
-      padding-top: 0;
-    }
-
-    .setting-item:last-child {
+    .setting-row:last-child {
       border-bottom: none;
-      padding-bottom: 0;
     }
 
-    .setting-text {
+    .setting-info {
       flex: 1;
     }
 
-    .setting-text h3 {
-      margin: 0 0 6px 0;
-      font-size: 16px;
+    .setting-title {
+      font-weight: 600;
+      margin-bottom: 5px;
     }
 
-    .setting-text p {
-      margin: 0;
-      color: #6b7280;
+    .setting-description {
       font-size: 14px;
-      line-height: 1.5;
+      color: #777;
+      line-height: 1.4;
     }
 
     .switch {
       position: relative;
       display: inline-block;
       width: 52px;
-      min-width: 52px;
       height: 28px;
+      flex-shrink: 0;
     }
 
     .switch input {
@@ -69,58 +75,65 @@
       position: absolute;
       cursor: pointer;
       inset: 0;
-      background: #d1d5db;
-      border-radius: 999px;
-      transition: 0.2s;
+      background-color: #ccc;
+      transition: 0.3s;
+      border-radius: 28px;
     }
 
-    .slider::before {
-      content: "";
+    .slider:before {
       position: absolute;
+      content: "";
       height: 22px;
       width: 22px;
       left: 3px;
       top: 3px;
-      background: #ffffff;
+      background-color: white;
+      transition: 0.3s;
       border-radius: 50%;
-      transition: 0.2s;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     .switch input:checked + .slider {
-      background: #2563eb;
+      background-color: #2563eb;
     }
 
-    .switch input:checked + .slider::before {
+    .switch input:checked + .slider:before {
       transform: translateX(24px);
     }
 
-    .info-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1e40af;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 20px;
-      line-height: 1.5;
+    .number-input {
+      width: 90px;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      text-align: center;
     }
 
     .warning-box {
       background: #fff7ed;
       border: 1px solid #fed7aa;
-      color: #9a3412;
       border-radius: 10px;
       padding: 14px 16px;
       margin-top: 18px;
+      color: #9a3412;
+      line-height: 1.5;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 18px;
+      color: #1e40af;
       line-height: 1.5;
     }
 
     .status-message {
-      display: none;
-      margin-top: 15px;
+      margin-top: 16px;
       padding: 12px 15px;
       border-radius: 8px;
-      font-weight: 600;
+      display: none;
     }
 
     .status-message.success {
@@ -137,15 +150,35 @@
       border: 1px solid #fecaca;
     }
 
-    .save-button-area {
+    .form-actions {
       display: flex;
-      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
       margin-top: 20px;
     }
 
+    .secondary-button {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .secondary-button:hover {
+      background: #f9fafb;
+    }
+
+    .danger-note {
+      margin-top: 15px;
+      color: #991b1b;
+      font-size: 13px;
+    }
+
     @media (max-width: 700px) {
-      .setting-item {
-        align-items: center;
+      .setting-row {
+        align-items: flex-start;
       }
     }
   </style>
@@ -153,17 +186,16 @@
 
 <body>
 
-  <div class="dashboard">
+  <div class="dashboard-container">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
 
-      <div class="logo">
-        <h2>Asesmen Online</h2>
-        <p>Dashboard Guru</p>
+      <div class="sidebar-header">
+        <h2>Asesmen</h2>
       </div>
 
-      <nav>
+      <nav class="sidebar-menu">
 
         <a href="dashboard.html" class="menu">
           🏠 Dashboard
@@ -199,97 +231,75 @@
 
       </nav>
 
-      <button id="logoutButton" class="logout">
-        🚪 Keluar
-      </button>
-
     </aside>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <main class="main-content">
 
       <!-- TOPBAR -->
       <header class="topbar">
 
         <div>
-
           <h1>Pengaturan Asesmen</h1>
-
-          <p>
-            Atur cara soal dan pilihan jawaban ditampilkan kepada siswa.
-          </p>
-
         </div>
 
         <div class="teacher-info">
-          👤 <span id="teacherName">Guru</span>
+          <span id="teacherName">
+            Guru
+          </span>
+
+          <button
+            id="logoutButton"
+            class="secondary-button"
+          >
+            Keluar
+          </button>
         </div>
 
       </header>
 
 
-      <!-- INFORMASI ASESMEN -->
-      <section class="content-card">
+      <!-- CONTENT -->
+      <section class="content">
 
         <div class="page-header">
 
           <div>
-
             <h2 id="assessmentTitle">
-              Memuat asesmen...
+              Pengaturan Asesmen
             </h2>
 
             <p id="assessmentInfo">
-              Memuat informasi asesmen...
+              Memuat data asesmen...
             </p>
-
           </div>
-
-          <button
-            type="button"
-            class="secondary-button"
-            id="kembaliButton"
-          >
-            ← Kembali
-          </button>
 
         </div>
 
-      </section>
+
+        <!-- PENGATURAN SOAL -->
+        <div class="settings-section">
+
+          <h2>📝 Pengaturan Soal</h2>
+
+          <p class="section-description">
+            Atur bagaimana soal dan pilihan jawaban ditampilkan
+            kepada siswa.
+          </p>
 
 
-      <!-- PENGATURAN -->
-      <section class="content-card">
+          <div class="setting-row">
 
-        <div class="setting-card">
+            <div class="setting-info">
 
-          <div class="info-box">
+              <div class="setting-title">
+                Acak Urutan Soal
+              </div>
 
-            <strong>💡 Pengaturan pengacakan</strong>
-
-            <br>
-
-            Pengaturan berikut menentukan bagaimana soal ditampilkan
-            kepada siswa saat mengerjakan asesmen.
-
-          </div>
-
-
-          <!-- ACAK SOAL -->
-          <div class="setting-item">
-
-            <div class="setting-text">
-
-              <h3>
-                🔀 Acak Urutan Soal
-              </h3>
-
-              <p>
+              <div class="setting-description">
                 Urutan soal akan diacak untuk setiap siswa.
-                Pengacakan akan mengikuti aturan kelompok jenis soal
-                yang kita tetapkan pada sistem.
-              </p>
+              </div>
 
             </div>
 
@@ -307,20 +317,17 @@
           </div>
 
 
-          <!-- ACAK PILIHAN -->
-          <div class="setting-item">
+          <div class="setting-row">
 
-            <div class="setting-text">
+            <div class="setting-info">
 
-              <h3>
-                🔤 Acak Pilihan Jawaban
-              </h3>
+              <div class="setting-title">
+                Acak Pilihan Jawaban
+              </div>
 
-              <p>
+              <div class="setting-description">
                 Urutan pilihan jawaban akan diacak untuk setiap siswa.
-                Jawaban benar tetap mengikuti isi pilihan, bukan huruf
-                A, B, C, atau D.
-              </p>
+              </div>
 
             </div>
 
@@ -338,20 +345,18 @@
           </div>
 
 
-          <!-- STIMULUS -->
-          <div class="setting-item">
+          <div class="setting-row">
 
-            <div class="setting-text">
+            <div class="setting-info">
 
-              <h3>
-                📖 Pertahankan Urutan Soal dalam Stimulus
-              </h3>
+              <div class="setting-title">
+                Pertahankan Urutan dalam Stimulus
+              </div>
 
-              <p>
-                Jika beberapa soal menggunakan stimulus yang sama,
-                soal-soal tersebut tetap berada dalam urutan yang sama.
-                Kelompok stimulus dapat berpindah sebagai satu kelompok.
-              </p>
+              <div class="setting-description">
+                Soal-soal yang menggunakan stimulus yang sama
+                tetap berada dalam urutan aslinya.
+              </div>
 
             </div>
 
@@ -368,39 +373,242 @@
 
           </div>
 
+        </div>
+
+
+        <!-- ANTI KECURANGAN -->
+        <div class="settings-section">
+
+          <h2>🔒 Pengaturan Anti-Kecurangan</h2>
+
+          <p class="section-description">
+            Sistem akan mencatat aktivitas siswa selama mengerjakan
+            asesmen. Fitur ini membantu guru mengetahui jika siswa
+            meninggalkan halaman ujian.
+          </p>
+
+
+          <!-- ANTI CHEAT -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+
+              <div class="setting-title">
+                Aktifkan Anti-Kecurangan
+              </div>
+
+              <div class="setting-description">
+                Mengaktifkan pemantauan aktivitas siswa selama ujian.
+              </div>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="antiCheatEnabled"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- FULLSCREEN -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+
+              <div class="setting-title">
+                Wajib Fullscreen
+              </div>
+
+              <div class="setting-description">
+                Siswa diminta mengerjakan dalam mode layar penuh.
+                Jika keluar fullscreen, aktivitas akan dicatat.
+              </div>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="requireFullscreen"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- TAB SWITCH -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+
+              <div class="setting-title">
+                Deteksi Pindah Tab
+              </div>
+
+              <div class="setting-description">
+                Sistem mencatat ketika siswa meninggalkan halaman
+                ujian atau berpindah tab.
+              </div>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="detectTabSwitch"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- FOCUS -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+
+              <div class="setting-title">
+                Deteksi Kehilangan Fokus
+              </div>
+
+              <div class="setting-description">
+                Sistem mencatat ketika jendela ujian kehilangan fokus.
+              </div>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="detectFocusLoss"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- MAX VIOLATIONS -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+
+              <div class="setting-title">
+                Batas Pelanggaran
+              </div>
+
+              <div class="setting-description">
+                Jumlah pelanggaran sebelum sistem mengambil tindakan.
+              </div>
+
+            </div>
+
+            <input
+              type="number"
+              id="maxViolations"
+              class="number-input"
+              min="1"
+              max="20"
+              value="3"
+            >
+
+          </div>
+
+
+          <!-- AUTO SUBMIT -->
+          <div class="setting-row">
+
+            <div class="setting-info">
+
+              <div class="setting-title">
+                Otomatis Kumpulkan Ujian
+              </div>
+
+              <div class="setting-description">
+                Jika batas pelanggaran tercapai, ujian siswa akan
+                dikumpulkan secara otomatis.
+              </div>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="autoSubmitOnViolation"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
 
           <div class="warning-box">
 
-            <strong>⚠️ Catatan</strong>
+            ⚠️ <strong>Penting:</strong>
+            Sistem berbasis browser tidak dapat menjamin bahwa
+            semua bentuk kecurangan dapat dideteksi. Misalnya,
+            website tidak dapat memastikan secara sempurna apakah
+            siswa menggunakan perangkat lain, kamera lain, atau
+            metode eksternal.
 
-            <br>
+          </div>
 
-            Pengaturan ini baru menentukan aturan asesmen.
-            Pengacakan yang sebenarnya akan diterapkan pada halaman
-            siswa ketika sistem pengerjaan asesmen dibuat.
+
+          <div class="info-box">
+
+            ℹ️ Aktivitas seperti pindah tab, keluar fullscreen,
+            dan kehilangan fokus akan dicatat ke sistem dan
+            nantinya dapat dilihat oleh guru.
 
           </div>
 
-
-          <!-- STATUS -->
-          <div
-            id="statusMessage"
-            class="status-message"
-          ></div>
+        </div>
 
 
-          <!-- BUTTON SIMPAN -->
-          <div class="save-button-area">
+        <!-- STATUS -->
+        <div
+          id="statusMessage"
+          class="status-message"
+        ></div>
 
-            <button
-              type="button"
-              class="primary-button"
-              id="simpanButton"
-            >
-              💾 Simpan Pengaturan
-            </button>
 
-          </div>
+        <!-- BUTTON -->
+        <div class="form-actions">
+
+          <button
+            id="simpanButton"
+            class="primary-button"
+          >
+            💾 Simpan Pengaturan
+          </button>
+
+          <button
+            id="kembaliButton"
+            class="secondary-button"
+          >
+            ← Kembali
+          </button>
 
         </div>
 
