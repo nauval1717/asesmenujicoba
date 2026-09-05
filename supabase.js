@@ -8,11 +8,17 @@ export const supabase = createClient(
   supabaseKey
 );
 
+
+// ===============================
+// LOGIN
+// ===============================
+
 const loginForm = document.getElementById('loginForm');
-const message = document.getElementById('message');
-const loginButton = document.getElementById('loginButton');
 
 if (loginForm) {
+
+  const message = document.getElementById('message');
+  const loginButton = document.getElementById('loginButton');
 
   loginForm.addEventListener('submit', async (event) => {
 
@@ -31,9 +37,12 @@ if (loginForm) {
     });
 
     if (error) {
+
       message.textContent = 'Login gagal: ' + error.message;
+
       loginButton.disabled = false;
       loginButton.textContent = 'Masuk';
+
       return;
     }
 
