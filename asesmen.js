@@ -52,7 +52,7 @@ if (user) {
 
 buatAsesmenButton.addEventListener('click', () => {
 
-  alert('Form Buat Asesmen akan kita buat pada langkah berikutnya.');
+ window.location.href = 'buat-asesmen.html');
 
 });
 
