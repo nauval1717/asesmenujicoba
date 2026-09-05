@@ -8,6 +8,175 @@
   <title>Tambah Soal - Asesmen Online</title>
 
   <link rel="stylesheet" href="dashboard.css">
+
+  <style>
+    /* =========================
+       TAMBAH SOAL
+    ========================== */
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 6px;
+      color: #6b7280;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .question-card {
+      margin-top: 25px;
+      padding: 20px;
+      border: 1px solid #dbe2ea;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .question-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .question-card-header h3 {
+      margin: 0;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .option-label {
+      width: 35px;
+      min-width: 35px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      border-radius: 8px;
+      background: #f1f5f9;
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-content input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .option-image-url {
+      margin-top: 7px;
+    }
+
+    .remove-option-button {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 8px;
+    }
+
+    .correct-options {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .correct-option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: normal !important;
+      margin: 0 !important;
+    }
+
+    .stimulus-box {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #dbe2ea;
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .stimulus-box h3 {
+      margin-top: 0;
+    }
+
+    .stimulus-question-list {
+      margin-top: 20px;
+    }
+
+    .danger-button {
+      border: 1px solid #dc2626;
+      color: #dc2626;
+      background: #fff;
+      padding: 9px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .info-box {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .image-preview {
+      max-width: 300px;
+      max-height: 200px;
+      margin-top: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -77,10 +246,7 @@
 
     <main class="main-content">
 
-
-      <!-- =========================
-           TOPBAR
-      ========================== -->
+      <!-- TOPBAR -->
 
       <header class="topbar">
 
@@ -89,7 +255,7 @@
           <h1>Tambah Soal</h1>
 
           <p>
-            Tambahkan soal pilihan ganda ke asesmen.
+            Buat soal pilihan ganda untuk asesmen.
           </p>
 
         </div>
@@ -132,7 +298,46 @@
 
 
       <!-- =========================
-           FORM SOAL
+           PILIH MODEL
+      ========================== -->
+
+      <section class="content-card">
+
+        <h2>Jenis Pembuatan Soal</h2>
+
+        <div class="info-box">
+
+          Pilih apakah soal akan menggunakan stimulus.
+          Satu stimulus dapat digunakan untuk beberapa soal.
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="creationMode">
+            Mode Soal
+          </label>
+
+          <select id="creationMode">
+
+            <option value="normal">
+              Soal tanpa stimulus
+            </option>
+
+            <option value="stimulus">
+              Soal dengan stimulus
+            </option>
+
+          </select>
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           FORM UTAMA
       ========================== -->
 
       <section class="content-card">
@@ -144,63 +349,20 @@
                STIMULUS
           ========================== -->
 
-          <div class="form-group">
-
-            <label for="stimulusSelect">
-              Stimulus
-            </label>
-
-            <select id="stimulusSelect">
-
-              <option value="">
-                -- Soal tanpa stimulus --
-              </option>
-
-            </select>
-
-            <small>
-              Pilih stimulus jika soal menggunakan bacaan,
-              gambar, tabel, atau informasi yang sama dengan
-              beberapa soal lainnya.
-            </small>
-
-          </div>
-
-
-          <!-- =========================
-               TOMBOL BUAT STIMULUS
-          ========================== -->
-
-          <div class="form-actions">
-
-            <button
-              type="button"
-              class="secondary-button"
-              id="buatStimulusButton"
-            >
-              + Buat Stimulus Baru
-            </button>
-
-          </div>
-
-
-          <!-- =========================
-               FORM STIMULUS BARU
-          ========================== -->
-
           <div
-            id="stimulusFormContainer"
-            style="display: none;"
+            id="stimulusSection"
+            class="hidden"
           >
 
-            <div class="content-card">
+            <div class="stimulus-box">
 
               <h3>
-                Buat Stimulus Baru
+                📖 Stimulus
               </h3>
 
               <p>
-                Stimulus dapat digunakan oleh beberapa soal.
+                Satu stimulus dapat digunakan oleh
+                beberapa soal.
               </p>
 
 
@@ -213,7 +375,7 @@
                 <input
                   type="text"
                   id="stimulusTitle"
-                  placeholder="Contoh: Bacaan Sistem Peredaran Darah"
+                  placeholder="Contoh: Sistem Peredaran Darah"
                 >
 
               </div>
@@ -228,7 +390,7 @@
                 <textarea
                   id="stimulusContent"
                   rows="8"
-                  placeholder="Tuliskan bacaan, informasi, kasus, atau teks yang menjadi stimulus..."
+                  placeholder="Tuliskan bacaan, kasus, informasi, atau petunjuk..."
                 ></textarea>
 
               </div>
@@ -237,7 +399,7 @@
               <div class="form-group">
 
                 <label for="stimulusImageUrl">
-                  URL Gambar Stimulus
+                  Gambar Stimulus
                 </label>
 
                 <input
@@ -247,31 +409,15 @@
                 >
 
                 <small>
-                  Untuk sementara gambar menggunakan URL.
-                  Fitur upload gambar langsung akan kita buat
-                  pada tahap berikutnya.
+                  Untuk tahap ini gambar menggunakan URL.
+                  Upload langsung akan dibuat pada tahap berikutnya.
                 </small>
 
-              </div>
-
-
-              <div class="form-actions">
-
-                <button
-                  type="button"
-                  class="secondary-button"
-                  id="batalStimulusButton"
+                <img
+                  id="stimulusImagePreview"
+                  class="image-preview"
+                  alt="Preview stimulus"
                 >
-                  Batal
-                </button>
-
-                <button
-                  type="button"
-                  class="primary-button"
-                  id="simpanStimulusButton"
-                >
-                  Simpan Stimulus
-                </button>
 
               </div>
 
@@ -281,173 +427,39 @@
 
 
           <!-- =========================
-               PERTANYAAN
+               DAFTAR SOAL
           ========================== -->
 
-          <div class="form-group">
+          <div class="stimulus-question-list">
 
-            <label for="questionText">
-              Pertanyaan
-            </label>
-
-            <textarea
-              id="questionText"
-              rows="6"
-              placeholder="Tuliskan pertanyaan..."
-              required
-            ></textarea>
-
-          </div>
-
-
-          <!-- =========================
-               PILIHAN A
-          ========================== -->
-
-          <div class="form-group">
-
-            <label for="optionA">
-              Pilihan A
-            </label>
-
-            <input
-              type="text"
-              id="optionA"
-              placeholder="Masukkan pilihan A"
-              required
+            <div
+              id="questionContainer"
             >
+              <!-- Soal dibuat oleh JavaScript -->
+            </div>
 
           </div>
 
 
           <!-- =========================
-               PILIHAN B
+               TAMBAH SOAL
           ========================== -->
 
-          <div class="form-group">
+          <div class="form-actions">
 
-            <label for="optionB">
-              Pilihan B
-            </label>
-
-            <input
-              type="text"
-              id="optionB"
-              placeholder="Masukkan pilihan B"
-              required
+            <button
+              type="button"
+              class="secondary-button"
+              id="tambahSoalButton"
             >
+              + Tambah Soal
+            </button>
 
           </div>
 
 
           <!-- =========================
-               PILIHAN C
-          ========================== -->
-
-          <div class="form-group">
-
-            <label for="optionC">
-              Pilihan C
-            </label>
-
-            <input
-              type="text"
-              id="optionC"
-              placeholder="Masukkan pilihan C"
-              required
-            >
-
-          </div>
-
-
-          <!-- =========================
-               PILIHAN D
-          ========================== -->
-
-          <div class="form-group">
-
-            <label for="optionD">
-              Pilihan D
-            </label>
-
-            <input
-              type="text"
-              id="optionD"
-              placeholder="Masukkan pilihan D"
-              required
-            >
-
-          </div>
-
-
-          <!-- =========================
-               JAWABAN BENAR
-          ========================== -->
-
-          <div class="form-group">
-
-            <label for="correctAnswer">
-              Jawaban Benar
-            </label>
-
-            <select
-              id="correctAnswer"
-              required
-            >
-
-              <option value="">
-                -- Pilih jawaban benar --
-              </option>
-
-              <option value="A">
-                A
-              </option>
-
-              <option value="B">
-                B
-              </option>
-
-              <option value="C">
-                C
-              </option>
-
-              <option value="D">
-                D
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <!-- =========================
-               BOBOT SOAL
-          ========================== -->
-
-          <div class="form-group">
-
-            <label for="points">
-              Bobot Soal
-            </label>
-
-            <input
-              type="number"
-              id="points"
-              value="1"
-              min="0"
-              step="0.1"
-              required
-            >
-
-            <small>
-              Bobot dapat berbeda untuk setiap soal.
-            </small>
-
-          </div>
-
-
-          <!-- =========================
-               TOMBOL FORM
+               TOMBOL AKHIR
           ========================== -->
 
           <div class="form-actions">
@@ -464,7 +476,7 @@
               type="submit"
               class="primary-button"
             >
-              Simpan Soal
+              💾 Simpan Soal
             </button>
 
           </div>
@@ -474,15 +486,10 @@
 
       </section>
 
-
     </main>
 
   </div>
 
-
-  <!-- =========================
-       JAVASCRIPT
-  ========================== -->
 
   <script
     type="module"
