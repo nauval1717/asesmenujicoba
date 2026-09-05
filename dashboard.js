@@ -1,68 +1,103 @@
-import { supabase } from './supabase.js';
+// ===============================
+// DASHBOARD.JS
+// ===============================
 
-const logoutButton = document.getElementById('logoutButton');
-const teacherName = document.getElementById('teacherName');
+// Pastikan guru sudah login
+async function checkLogin() {
+  const { data, error } = await supabase.auth.getUser();
 
-
-// CEK LOGIN
-const { data: { user }, error: userError } =
-  await supabase.auth.getUser();
-
-if (userError) {
-  teacherName.textContent = 'Error login';
-  console.error('USER ERROR:', userError);
-}
-
-if (!user) {
-  window.location.href = 'index.html';
-}
-
-
-// AMBIL DATA PROFIL
-if (user) {
-
-  teacherName.textContent = 'Memuat...';
-
-  console.log('USER ID:', user.id);
-
-  const { data: profile, error: profileError } =
-    await supabase
-      .from('profiles')
-      .select('full_name, role')
-      .eq('id', user.id)
-      .single();
-
-  console.log('PROFILE:', profile);
-  console.log('PROFILE ERROR:', profileError);
-
-  if (profileError) {
-
-    teacherName.textContent = 'Gagal membaca profil';
-
-    alert(
-      'Gagal membaca profil guru:\n' +
-      profileError.message
-    );
-
-  } else if (profile) {
-
-    teacherName.textContent = profile.full_name;
-
+  if (error || !data.user) {
+    window.location.href = "index.html";
+    return null;
   }
 
+  return data.user;
 }
 
 
-// LOGOUT
-logoutButton.addEventListener('click', async () => {
+// ===============================
+// LOAD PROFIL GURU
+// ===============================
+async function loadTeacherProfile(user) {
+  const teacherNameElement = document.getElementById("teacherName");
 
-  const { error } = await supabase.auth.signOut();
+  if (!teacherNameElement) return;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .maybeSingle();
 
   if (error) {
-    alert('Gagal keluar: ' + error.message);
+    console.error("Gagal mengambil profil guru:", error);
+    teacherNameElement.textContent = "Guru";
     return;
   }
 
-  window.location.href = 'index.html';
+  teacherNameElement.textContent =
+    data?.full_name || "Guru";
+}
 
-});
+
+// ===============================
+// LOGOUT DENGAN KONFIRMASI
+// ===============================
+function setupLogout() {
+  const logoutButton = document.getElementById("logoutButton");
+
+  if (!logoutButton) return;
+
+  logoutButton.addEventListener("click", async () => {
+
+    const yakin = confirm(
+      "Apakah Anda yakin ingin keluar?"
+    );
+
+    // Jika pilih Cancel
+    if (!yakin) {
+      return;
+    }
+
+    // Jika pilih OK
+    logoutButton.disabled = true;
+    logoutButton.textContent = "Keluar...";
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Gagal logout:", error);
+
+      alert(
+        "Terjadi kesalahan saat keluar. Silakan coba lagi."
+      );
+
+      logoutButton.disabled = false;
+      logoutButton.textContent = "🚪 Keluar";
+
+      return;
+    }
+
+    // Kembali ke halaman login
+    window.location.href = "index.html";
+  });
+}
+
+
+// ===============================
+// JALANKAN DASHBOARD
+// ===============================
+async function initDashboard() {
+
+  const user = await checkLogin();
+
+  if (!user) return;
+
+  await loadTeacherProfile(user);
+
+  setupLogout();
+}
+
+
+// Jalankan setelah halaman selesai dimuat
+document.addEventListener("DOMContentLoaded", initDashboard);
