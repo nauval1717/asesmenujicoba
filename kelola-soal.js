@@ -1,9 +1,8 @@
 import { supabase } from './supabase.js';
 
-
-// ===============================
+// =====================================================
 // ELEMENT HALAMAN
-// ===============================
+// =====================================================
 
 const teacherName =
   document.getElementById('teacherName');
@@ -27,9 +26,9 @@ const soalTable =
   document.getElementById('soalTable');
 
 
-// ===============================
+// =====================================================
 // AMBIL ID ASESMEN DARI URL
-// ===============================
+// =====================================================
 
 const params =
   new URLSearchParams(window.location.search);
@@ -38,33 +37,27 @@ const assessmentId =
   params.get('id');
 
 
-// ===============================
+// =====================================================
 // CEK LOGIN
-// ===============================
+// =====================================================
 
 const {
   data: { user },
   error: userError
 } = await supabase.auth.getUser();
 
-
 if (userError || !user) {
-
-  window.location.href =
-    'index.html';
-
+  window.location.href = 'index.html';
 }
 
 
-// ===============================
+// =====================================================
 // CEK ID ASESMEN
-// ===============================
+// =====================================================
 
 if (!assessmentId) {
 
-  alert(
-    'ID asesmen tidak ditemukan.'
-  );
+  alert('ID asesmen tidak ditemukan.');
 
   window.location.href =
     'asesmen.html';
@@ -72,9 +65,9 @@ if (!assessmentId) {
 }
 
 
-// ===============================
+// =====================================================
 // DATA GURU
-// ===============================
+// =====================================================
 
 if (user) {
 
@@ -87,7 +80,6 @@ if (user) {
     .eq('id', user.id)
     .single();
 
-
   if (!profileError && profile) {
 
     teacherName.textContent =
@@ -98,9 +90,9 @@ if (user) {
 }
 
 
-// ===============================
+// =====================================================
 // NAMA JENIS ASESMEN
-// ===============================
+// =====================================================
 
 function getTypeName(type) {
 
@@ -120,15 +112,14 @@ function getTypeName(type) {
 
   };
 
-
   return types[type] || type;
 
 }
 
 
-// ===============================
+// =====================================================
 // AMBIL DATA ASESMEN
-// ===============================
+// =====================================================
 
 async function loadAssessment() {
 
@@ -149,7 +140,6 @@ async function loadAssessment() {
     .eq('teacher_id', user.id)
     .single();
 
-
   if (error) {
 
     console.error(
@@ -168,22 +158,17 @@ async function loadAssessment() {
 
   }
 
-
   assessmentTitle.textContent =
     data.title;
-
 
   const subjectName =
     data.subjects?.name || '-';
 
-
   const className =
     data.classes?.name || '-';
 
-
   const typeName =
     getTypeName(data.type);
-
 
   assessmentInfo.textContent =
     `${typeName} • ${subjectName} • Kelas ${className}`;
@@ -191,9 +176,219 @@ async function loadAssessment() {
 }
 
 
-// ===============================
+// =====================================================
+// RAPKAN NOMOR SOAL
+// =====================================================
+
+async function renumberAssessmentQuestions() {
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from('assessment_questions')
+    .select('id, question_number')
+    .eq('assessment_id', assessmentId)
+    .order('question_number', {
+      ascending: true
+    });
+
+  if (error) {
+
+    console.error(
+      'Gagal mengambil nomor soal:',
+      error
+    );
+
+    return;
+
+  }
+
+  if (!data || data.length === 0) {
+    return;
+  }
+
+  for (
+    let index = 0;
+    index < data.length;
+    index++
+  ) {
+
+    const newNumber =
+      index + 1;
+
+    const item =
+      data[index];
+
+    if (
+      item.question_number !== newNumber
+    ) {
+
+      const {
+        error: updateError
+      } = await supabase
+        .from('assessment_questions')
+        .update({
+          question_number:
+            newNumber
+        })
+        .eq('id', item.id);
+
+      if (updateError) {
+
+        console.error(
+          'Gagal merapikan nomor soal:',
+          updateError
+        );
+
+      }
+
+    }
+
+  }
+
+}
+
+
+// =====================================================
+// HAPUS SOAL
+// =====================================================
+
+async function deleteQuestion(
+  assessmentQuestionId,
+  questionId,
+  stimulusId,
+  questionNumber
+) {
+
+  let confirmationMessage;
+
+  if (stimulusId) {
+
+    confirmationMessage =
+      `⚠️ INI ADALAH SOAL STIMULUS.\n\n` +
+      `Soal nomor ${questionNumber} menggunakan stimulus.\n\n` +
+      `Apakah Anda yakin ingin menghapus soal ini?`;
+
+  } else {
+
+    confirmationMessage =
+      `Apakah Anda yakin ingin menghapus soal nomor ${questionNumber}?`;
+
+  }
+
+  const confirmed =
+    confirm(confirmationMessage);
+
+  if (!confirmed) {
+    return;
+  }
+
+  // ---------------------------------------------------
+  // HAPUS DARI ASSESSMENT QUESTIONS
+  // ---------------------------------------------------
+
+  const {
+    error: assessmentQuestionError
+  } = await supabase
+    .from('assessment_questions')
+    .delete()
+    .eq('id', assessmentQuestionId)
+    .eq('assessment_id', assessmentId);
+
+  if (assessmentQuestionError) {
+
+    console.error(
+      'Gagal menghapus soal dari asesmen:',
+      assessmentQuestionError
+    );
+
+    alert(
+      'Gagal menghapus soal dari asesmen:\n' +
+      assessmentQuestionError.message
+    );
+
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // HAPUS SOAL
+  // ---------------------------------------------------
+
+  const {
+    error: questionError
+  } = await supabase
+    .from('questions')
+    .delete()
+    .eq('id', questionId)
+    .eq('teacher_id', user.id);
+
+  if (questionError) {
+
+    console.error(
+      'Gagal menghapus soal:',
+      questionError
+    );
+
+    alert(
+      'Soal sudah dilepas dari asesmen, tetapi gagal menghapus data soal:\n' +
+      questionError.message
+    );
+
+    await loadQuestions();
+
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // STIMULUS TIDAK DIHAPUS
+  // ---------------------------------------------------
+  //
+  // Stimulus sengaja tidak langsung dihapus.
+  //
+  // Alasannya:
+  // stimulus mungkin masih digunakan oleh
+  // soal lain.
+  //
+  // Nanti kita bisa membuat fitur pengelolaan stimulus
+  // secara khusus.
+  // ---------------------------------------------------
+
+
+  // ---------------------------------------------------
+  // RAPKAN NOMOR
+  // ---------------------------------------------------
+
+  await renumberAssessmentQuestions();
+
+
+  // ---------------------------------------------------
+  // TAMPILKAN PESAN
+  // ---------------------------------------------------
+
+  alert(
+    stimulusId
+      ? 'Soal stimulus berhasil dihapus.'
+      : 'Soal berhasil dihapus.'
+  );
+
+
+  // ---------------------------------------------------
+  // MUAT ULANG DAFTAR SOAL
+  // ---------------------------------------------------
+
+  await loadQuestions();
+
+}
+
+
+// =====================================================
 // AMBIL DAFTAR SOAL
-// ===============================
+// =====================================================
 
 async function loadQuestions() {
 
@@ -209,14 +404,14 @@ async function loadQuestions() {
       questions (
         id,
         question_text,
-        question_type
+        question_type,
+        stimulus_id
       )
     `)
     .eq('assessment_id', assessmentId)
     .order('question_number', {
       ascending: true
     });
-
 
   if (error) {
 
@@ -226,14 +421,18 @@ async function loadQuestions() {
     );
 
     soalTable.innerHTML = `
+
       <tr>
+
         <td
           colspan="5"
           class="empty-table"
         >
           Gagal memuat soal.
         </td>
+
       </tr>
+
     `;
 
     return;
@@ -241,21 +440,28 @@ async function loadQuestions() {
   }
 
 
-  // ===============================
-  // JIKA BELUM ADA SOAL
-  // ===============================
+  // ---------------------------------------------------
+  // BELUM ADA SOAL
+  // ---------------------------------------------------
 
-  if (!data || data.length === 0) {
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
     soalTable.innerHTML = `
+
       <tr>
+
         <td
           colspan="5"
           class="empty-table"
         >
           Belum ada soal.
         </td>
+
       </tr>
+
     `;
 
     return;
@@ -263,79 +469,273 @@ async function loadQuestions() {
   }
 
 
-  // ===============================
+  // ---------------------------------------------------
   // TAMPILKAN SOAL
-  // ===============================
+  // ---------------------------------------------------
 
   soalTable.innerHTML = '';
 
 
-  data.forEach((item, index) => {
+  data.forEach(
+    (item, index) => {
 
-    const question =
-      item.questions;
+      const question =
+        item.questions;
 
-
-    const questionText =
-      question?.question_text || '-';
-
-
-    const questionType =
-      question?.question_type ===
-      'multiple_choice'
-        ? 'Pilihan Ganda'
-        : question?.question_type || '-';
+      const questionText =
+        question?.question_text || '-';
 
 
-    const points =
-      item.points ?? 0;
+      // -----------------------------------------------
+      // TIPE SOAL
+      // -----------------------------------------------
+
+      let questionType =
+        question?.question_type;
 
 
-    const row =
-      document.createElement('tr');
+      if (
+        questionType ===
+        'multiple_choice'
+      ) {
+
+        questionType =
+          'Pilihan Ganda';
+
+      } else if (
+        questionType ===
+        'multiple_select'
+      ) {
+
+        questionType =
+          'Pilihan Ganda Kompleks';
+
+      } else {
+
+        questionType =
+          questionType || '-';
+
+      }
 
 
-    row.innerHTML = `
-      <td>
-        ${item.question_number || index + 1}
-      </td>
+      // -----------------------------------------------
+      // STIMULUS
+      // -----------------------------------------------
 
-      <td>
-        ${questionText}
-      </td>
-
-      <td>
-        ${questionType}
-      </td>
-
-      <td>
-        ${points}
-      </td>
-
-      <td>
-
-        <button
-          class="secondary-button"
-          type="button"
-          onclick="alert('Fitur edit soal akan dibuat setelah fitur tambah soal selesai.')"
-        >
-          Edit
-        </button>
-
-      </td>
-    `;
+      const stimulusId =
+        question?.stimulus_id || null;
 
 
-    soalTable.appendChild(row);
+      // -----------------------------------------------
+      // BOBOT
+      // -----------------------------------------------
 
-  });
+      const points =
+        item.points ?? 0;
+
+
+      // -----------------------------------------------
+      // BARIS TABEL
+      // -----------------------------------------------
+
+      const row =
+        document.createElement('tr');
+
+
+      // -----------------------------------------------
+      // NOMOR
+      // -----------------------------------------------
+
+      const numberCell =
+        document.createElement('td');
+
+      numberCell.textContent =
+        item.question_number ||
+        index + 1;
+
+
+      // -----------------------------------------------
+      // SOAL
+      // -----------------------------------------------
+
+      const questionCell =
+        document.createElement('td');
+
+      questionCell.textContent =
+        questionText;
+
+
+      // -----------------------------------------------
+      // TIPE
+      // -----------------------------------------------
+
+      const typeCell =
+        document.createElement('td');
+
+      typeCell.textContent =
+        questionType;
+
+
+      // -----------------------------------------------
+      // BOBOT
+      // -----------------------------------------------
+
+      const pointsCell =
+        document.createElement('td');
+
+      pointsCell.textContent =
+        points;
+
+
+      // -----------------------------------------------
+      // AKSI
+      // -----------------------------------------------
+
+      const actionCell =
+        document.createElement('td');
+
+
+      // -----------------------------------------------
+      // TOMBOL EDIT
+      // -----------------------------------------------
+
+      const editButton =
+        document.createElement('button');
+
+      editButton.type =
+        'button';
+
+      editButton.className =
+        'secondary-button';
+
+      editButton.textContent =
+        'Edit';
+
+      editButton.addEventListener(
+        'click',
+        () => {
+
+          alert(
+            'Fitur Edit Soal akan kita buat setelah fitur Hapus selesai.'
+          );
+
+        }
+      );
+
+
+      // -----------------------------------------------
+      // SPASI
+      // -----------------------------------------------
+
+      const spacer =
+        document.createTextNode(' ');
+
+
+      // -----------------------------------------------
+      // TOMBOL HAPUS
+      // -----------------------------------------------
+
+      const deleteButton =
+        document.createElement('button');
+
+      deleteButton.type =
+        'button';
+
+      deleteButton.className =
+        'danger-button';
+
+      deleteButton.textContent =
+        'Hapus';
+
+
+      deleteButton.addEventListener(
+        'click',
+        async () => {
+
+          deleteButton.disabled =
+            true;
+
+          deleteButton.textContent =
+            'Menghapus...';
+
+          await deleteQuestion(
+
+            item.id,
+
+            question?.id,
+
+            stimulusId,
+
+            item.question_number ||
+            index + 1
+
+          );
+
+          deleteButton.disabled =
+            false;
+
+          deleteButton.textContent =
+            'Hapus';
+
+        }
+      );
+
+
+      // -----------------------------------------------
+      // MASUKKAN KE CELL
+      // -----------------------------------------------
+
+      actionCell.appendChild(
+        editButton
+      );
+
+      actionCell.appendChild(
+        spacer
+      );
+
+      actionCell.appendChild(
+        deleteButton
+      );
+
+
+      // -----------------------------------------------
+      // MASUKKAN KE BARIS
+      // -----------------------------------------------
+
+      row.appendChild(
+        numberCell
+      );
+
+      row.appendChild(
+        questionCell
+      );
+
+      row.appendChild(
+        typeCell
+      );
+
+      row.appendChild(
+        pointsCell
+      );
+
+      row.appendChild(
+        actionCell
+      );
+
+
+      soalTable.appendChild(
+        row
+      );
+
+    }
+  );
 
 }
 
 
-// ===============================
+// =====================================================
 // TOMBOL KEMBALI
-// ===============================
+// =====================================================
 
 kembaliButton.addEventListener(
   'click',
@@ -348,9 +748,9 @@ kembaliButton.addEventListener(
 );
 
 
-// ===============================
+// =====================================================
 // TOMBOL TAMBAH SOAL
-// ===============================
+// =====================================================
 
 tambahSoalButton.addEventListener(
   'click',
@@ -363,9 +763,9 @@ tambahSoalButton.addEventListener(
 );
 
 
-// ===============================
+// =====================================================
 // LOGOUT
-// ===============================
+// =====================================================
 
 logoutButton.addEventListener(
   'click',
@@ -374,7 +774,6 @@ logoutButton.addEventListener(
     const {
       error
     } = await supabase.auth.signOut();
-
 
     if (error) {
 
@@ -387,7 +786,6 @@ logoutButton.addEventListener(
 
     }
 
-
     window.location.href =
       'index.html';
 
@@ -395,11 +793,14 @@ logoutButton.addEventListener(
 );
 
 
-// ===============================
+// =====================================================
 // JALANKAN HALAMAN
-// ===============================
+// =====================================================
 
-if (assessmentId && user) {
+if (
+  assessmentId &&
+  user
+) {
 
   await loadAssessment();
 
