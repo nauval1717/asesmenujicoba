@@ -16,14 +16,14 @@ const assessmentTitle =
 const assessmentInfo =
   document.getElementById('assessmentInfo');
 
-const kembaliButton =
-  document.getElementById('kembaliButton');
+const soalTable =
+  document.getElementById('soalTable');
 
 const tambahSoalButton =
   document.getElementById('tambahSoalButton');
 
-const soalTable =
-  document.getElementById('soalTable');
+const kembaliButton =
+  document.getElementById('kembaliButton');
 
 
 // =====================================================
@@ -47,17 +47,17 @@ const {
 } = await supabase.auth.getUser();
 
 if (userError || !user) {
-  window.location.href = 'index.html';
+
+  window.location.href =
+    'index.html';
+
 }
-
-
-// =====================================================
-// CEK ID ASESMEN
-// =====================================================
 
 if (!assessmentId) {
 
-  alert('ID asesmen tidak ditemukan.');
+  alert(
+    'ID asesmen tidak ditemukan.'
+  );
 
   window.location.href =
     'asesmen.html';
@@ -66,7 +66,7 @@ if (!assessmentId) {
 
 
 // =====================================================
-// DATA GURU
+// PROFIL GURU
 // =====================================================
 
 if (user) {
@@ -91,7 +91,7 @@ if (user) {
 
 
 // =====================================================
-// NAMA JENIS ASESMEN
+// NAMA TIPE ASESMEN
 // =====================================================
 
 function getTypeName(type) {
@@ -118,7 +118,28 @@ function getTypeName(type) {
 
 
 // =====================================================
-// AMBIL DATA ASESMEN
+// NAMA TIPE SOAL
+// =====================================================
+
+function getQuestionTypeName(type) {
+
+  const types = {
+
+    multiple_choice:
+      'Pilihan Ganda',
+
+    multiple_select:
+      'Pilihan Ganda Kompleks'
+
+  };
+
+  return types[type] || type;
+
+}
+
+
+// =====================================================
+// LOAD DATA ASESMEN
 // =====================================================
 
 async function loadAssessment() {
@@ -132,7 +153,6 @@ async function loadAssessment() {
       id,
       title,
       type,
-      duration_minutes,
       subjects(name),
       classes(name)
     `)
@@ -167,230 +187,33 @@ async function loadAssessment() {
   const className =
     data.classes?.name || '-';
 
-  const typeName =
-    getTypeName(data.type);
-
   assessmentInfo.textContent =
-    `${typeName} • ${subjectName} • Kelas ${className}`;
+    `${getTypeName(data.type)} • ${subjectName} • Kelas ${className}`;
 
 }
 
 
 // =====================================================
-// RAPKAN NOMOR SOAL
-// =====================================================
-
-async function renumberAssessmentQuestions() {
-
-  const {
-    data,
-    error
-  } = await supabase
-    .from('assessment_questions')
-    .select('id, question_number')
-    .eq('assessment_id', assessmentId)
-    .order('question_number', {
-      ascending: true
-    });
-
-  if (error) {
-
-    console.error(
-      'Gagal mengambil nomor soal:',
-      error
-    );
-
-    return;
-
-  }
-
-  if (!data || data.length === 0) {
-    return;
-  }
-
-  for (
-    let index = 0;
-    index < data.length;
-    index++
-  ) {
-
-    const newNumber =
-      index + 1;
-
-    const item =
-      data[index];
-
-    if (
-      item.question_number !== newNumber
-    ) {
-
-      const {
-        error: updateError
-      } = await supabase
-        .from('assessment_questions')
-        .update({
-          question_number:
-            newNumber
-        })
-        .eq('id', item.id);
-
-      if (updateError) {
-
-        console.error(
-          'Gagal merapikan nomor soal:',
-          updateError
-        );
-
-      }
-
-    }
-
-  }
-
-}
-
-
-// =====================================================
-// HAPUS SOAL
-// =====================================================
-
-async function deleteQuestion(
-  assessmentQuestionId,
-  questionId,
-  stimulusId,
-  questionNumber
-) {
-
-  let confirmationMessage;
-
-  if (stimulusId) {
-
-    confirmationMessage =
-      `⚠️ INI ADALAH SOAL STIMULUS.\n\n` +
-      `Soal nomor ${questionNumber} menggunakan stimulus.\n\n` +
-      `Apakah Anda yakin ingin menghapus soal ini?`;
-
-  } else {
-
-    confirmationMessage =
-      `Apakah Anda yakin ingin menghapus soal nomor ${questionNumber}?`;
-
-  }
-
-  const confirmed =
-    confirm(confirmationMessage);
-
-  if (!confirmed) {
-    return;
-  }
-
-  // ---------------------------------------------------
-  // HAPUS DARI ASSESSMENT QUESTIONS
-  // ---------------------------------------------------
-
-  const {
-    error: assessmentQuestionError
-  } = await supabase
-    .from('assessment_questions')
-    .delete()
-    .eq('id', assessmentQuestionId)
-    .eq('assessment_id', assessmentId);
-
-  if (assessmentQuestionError) {
-
-    console.error(
-      'Gagal menghapus soal dari asesmen:',
-      assessmentQuestionError
-    );
-
-    alert(
-      'Gagal menghapus soal dari asesmen:\n' +
-      assessmentQuestionError.message
-    );
-
-    return;
-
-  }
-
-
-  // ---------------------------------------------------
-  // HAPUS SOAL
-  // ---------------------------------------------------
-
-  const {
-    error: questionError
-  } = await supabase
-    .from('questions')
-    .delete()
-    .eq('id', questionId)
-    .eq('teacher_id', user.id);
-
-  if (questionError) {
-
-    console.error(
-      'Gagal menghapus soal:',
-      questionError
-    );
-
-    alert(
-      'Soal sudah dilepas dari asesmen, tetapi gagal menghapus data soal:\n' +
-      questionError.message
-    );
-
-    await loadQuestions();
-
-    return;
-
-  }
-
-
-  // ---------------------------------------------------
-  // STIMULUS TIDAK DIHAPUS
-  // ---------------------------------------------------
-  //
-  // Stimulus sengaja tidak langsung dihapus.
-  //
-  // Alasannya:
-  // stimulus mungkin masih digunakan oleh
-  // soal lain.
-  //
-  // Nanti kita bisa membuat fitur pengelolaan stimulus
-  // secara khusus.
-  // ---------------------------------------------------
-
-
-  // ---------------------------------------------------
-  // RAPKAN NOMOR
-  // ---------------------------------------------------
-
-  await renumberAssessmentQuestions();
-
-
-  // ---------------------------------------------------
-  // TAMPILKAN PESAN
-  // ---------------------------------------------------
-
-  alert(
-    stimulusId
-      ? 'Soal stimulus berhasil dihapus.'
-      : 'Soal berhasil dihapus.'
-  );
-
-
-  // ---------------------------------------------------
-  // MUAT ULANG DAFTAR SOAL
-  // ---------------------------------------------------
-
-  await loadQuestions();
-
-}
-
-
-// =====================================================
-// AMBIL DAFTAR SOAL
+// LOAD DAFTAR SOAL
 // =====================================================
 
 async function loadQuestions() {
+
+  soalTable.innerHTML = `
+
+    <tr>
+
+      <td
+        colspan="5"
+        class="empty-table"
+      >
+        Memuat soal...
+      </td>
+
+    </tr>
+
+  `;
+
 
   const {
     data,
@@ -401,6 +224,7 @@ async function loadQuestions() {
       id,
       question_number,
       points,
+      question_id,
       questions (
         id,
         question_text,
@@ -408,10 +232,17 @@ async function loadQuestions() {
         stimulus_id
       )
     `)
-    .eq('assessment_id', assessmentId)
-    .order('question_number', {
-      ascending: true
-    });
+    .eq(
+      'assessment_id',
+      assessmentId
+    )
+    .order(
+      'question_number',
+      {
+        ascending: true
+      }
+    );
+
 
   if (error) {
 
@@ -440,14 +271,7 @@ async function loadQuestions() {
   }
 
 
-  // ---------------------------------------------------
-  // BELUM ADA SOAL
-  // ---------------------------------------------------
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
+  if (!data || data.length === 0) {
 
     soalTable.innerHTML = `
 
@@ -469,262 +293,176 @@ async function loadQuestions() {
   }
 
 
-  // ---------------------------------------------------
-  // TAMPILKAN SOAL
-  // ---------------------------------------------------
-
   soalTable.innerHTML = '';
 
 
   data.forEach(
-    (item, index) => {
+    (item) => {
 
       const question =
         item.questions;
 
-      const questionText =
-        question?.question_text || '-';
 
-
-      // -----------------------------------------------
-      // TIPE SOAL
-      // -----------------------------------------------
-
-      let questionType =
-        question?.question_type;
-
-
-      if (
-        questionType ===
-        'multiple_choice'
-      ) {
-
-        questionType =
-          'Pilihan Ganda';
-
-      } else if (
-        questionType ===
-        'multiple_select'
-      ) {
-
-        questionType =
-          'Pilihan Ganda Kompleks';
-
-      } else {
-
-        questionType =
-          questionType || '-';
-
+      if (!question) {
+        return;
       }
 
-
-      // -----------------------------------------------
-      // STIMULUS
-      // -----------------------------------------------
-
-      const stimulusId =
-        question?.stimulus_id || null;
-
-
-      // -----------------------------------------------
-      // BOBOT
-      // -----------------------------------------------
-
-      const points =
-        item.points ?? 0;
-
-
-      // -----------------------------------------------
-      // BARIS TABEL
-      // -----------------------------------------------
 
       const row =
         document.createElement('tr');
 
 
-      // -----------------------------------------------
-      // NOMOR
-      // -----------------------------------------------
-
-      const numberCell =
-        document.createElement('td');
-
-      numberCell.textContent =
-        item.question_number ||
-        index + 1;
+      const questionPreview =
+        question.question_text.length > 100
+          ? question.question_text.substring(
+              0,
+              100
+            ) + '...'
+          : question.question_text;
 
 
-      // -----------------------------------------------
-      // SOAL
-      // -----------------------------------------------
-
-      const questionCell =
-        document.createElement('td');
-
-      questionCell.textContent =
-        questionText;
+      const stimulusLabel =
+        question.stimulus_id
+          ? ' 📖 Stimulus'
+          : '';
 
 
-      // -----------------------------------------------
-      // TIPE
-      // -----------------------------------------------
+      row.innerHTML = `
 
-      const typeCell =
-        document.createElement('td');
+        <td>
+          ${item.question_number}
+        </td>
 
-      typeCell.textContent =
-        questionType;
+        <td>
+
+          ${escapeHtml(
+            questionPreview
+          )}
+
+          ${stimulusLabel}
+
+        </td>
+
+        <td>
+
+          ${getQuestionTypeName(
+            question.question_type
+          )}
+
+        </td>
+
+        <td>
+
+          ${item.points ?? 0}
+
+        </td>
+
+        <td>
+
+          <div
+            style="
+              display:flex;
+              gap:8px;
+              flex-wrap:wrap;
+            "
+          >
+
+            <button
+              type="button"
+              class="primary-button edit-question-button"
+              data-question-id="${question.id}"
+            >
+              ✏️ Edit
+            </button>
+
+            <button
+              type="button"
+              class="danger-button delete-question-button"
+              data-question-id="${question.id}"
+              data-question-number="${item.question_number}"
+              data-stimulus-id="${question.stimulus_id || ''}"
+            >
+              🗑️ Hapus
+            </button>
+
+          </div>
+
+        </td>
+
+      `;
 
 
-      // -----------------------------------------------
-      // BOBOT
-      // -----------------------------------------------
+      soalTable.appendChild(row);
 
-      const pointsCell =
-        document.createElement('td');
-
-      pointsCell.textContent =
-        points;
+    }
+  );
 
 
-      // -----------------------------------------------
-      // AKSI
-      // -----------------------------------------------
+  // ===================================================
+  // EVENT EDIT
+  // ===================================================
 
-      const actionCell =
-        document.createElement('td');
+  const editButtons =
+    soalTable.querySelectorAll(
+      '.edit-question-button'
+    );
 
 
-      // -----------------------------------------------
-      // TOMBOL EDIT
-      // -----------------------------------------------
+  editButtons.forEach(
+    (button) => {
 
-      const editButton =
-        document.createElement('button');
-
-      editButton.type =
-        'button';
-
-      editButton.className =
-        'secondary-button';
-
-      editButton.textContent =
-        'Edit';
-
-      editButton.addEventListener(
+      button.addEventListener(
         'click',
         () => {
 
-          alert(
-            'Fitur Edit Soal akan kita buat setelah fitur Hapus selesai.'
-          );
+          const questionId =
+            button.dataset.questionId;
+
+
+          window.location.href =
+            `edit-soal.html?id=${questionId}&assessment=${assessmentId}`;
 
         }
       );
 
-
-      // -----------------------------------------------
-      // SPASI
-      // -----------------------------------------------
-
-      const spacer =
-        document.createTextNode(' ');
+    }
+  );
 
 
-      // -----------------------------------------------
-      // TOMBOL HAPUS
-      // -----------------------------------------------
+  // ===================================================
+  // EVENT HAPUS
+  // ===================================================
 
-      const deleteButton =
-        document.createElement('button');
-
-      deleteButton.type =
-        'button';
-
-      deleteButton.className =
-        'danger-button';
-
-      deleteButton.textContent =
-        'Hapus';
+  const deleteButtons =
+    soalTable.querySelectorAll(
+      '.delete-question-button'
+    );
 
 
-      deleteButton.addEventListener(
+  deleteButtons.forEach(
+    (button) => {
+
+      button.addEventListener(
         'click',
         async () => {
 
-          deleteButton.disabled =
-            true;
+          const questionId =
+            button.dataset.questionId;
 
-          deleteButton.textContent =
-            'Menghapus...';
+          const questionNumber =
+            button.dataset.questionNumber;
+
+          const stimulusId =
+            button.dataset.stimulusId;
+
 
           await deleteQuestion(
-
-            item.id,
-
-            question?.id,
-
-            stimulusId,
-
-            item.question_number ||
-            index + 1
-
+            questionId,
+            questionNumber,
+            stimulusId
           );
 
-          deleteButton.disabled =
-            false;
-
-          deleteButton.textContent =
-            'Hapus';
-
         }
-      );
-
-
-      // -----------------------------------------------
-      // MASUKKAN KE CELL
-      // -----------------------------------------------
-
-      actionCell.appendChild(
-        editButton
-      );
-
-      actionCell.appendChild(
-        spacer
-      );
-
-      actionCell.appendChild(
-        deleteButton
-      );
-
-
-      // -----------------------------------------------
-      // MASUKKAN KE BARIS
-      // -----------------------------------------------
-
-      row.appendChild(
-        numberCell
-      );
-
-      row.appendChild(
-        questionCell
-      );
-
-      row.appendChild(
-        typeCell
-      );
-
-      row.appendChild(
-        pointsCell
-      );
-
-      row.appendChild(
-        actionCell
-      );
-
-
-      soalTable.appendChild(
-        row
       );
 
     }
@@ -734,18 +472,316 @@ async function loadQuestions() {
 
 
 // =====================================================
-// TOMBOL KEMBALI
+// HAPUS SOAL
 // =====================================================
 
-kembaliButton.addEventListener(
-  'click',
-  () => {
+async function deleteQuestion(
+  questionId,
+  questionNumber,
+  stimulusId
+) {
 
-    window.location.href =
-      `kelola-asesmen.html?id=${assessmentId}`;
+
+  // ---------------------------------------------------
+  // KONFIRMASI
+  // ---------------------------------------------------
+
+  let confirmed;
+
+
+  if (stimulusId) {
+
+    confirmed =
+      confirm(
+
+        `⚠️ INI ADALAH SOAL STIMULUS.\n\n` +
+
+        `Soal nomor ${questionNumber} ` +
+        `menggunakan stimulus.\n\n` +
+
+        `Menghapus soal ini TIDAK otomatis ` +
+        `menghapus stimulusnya.\n\n` +
+
+        `Apakah Anda yakin ingin menghapus soal ini?`
+
+      );
+
+  } else {
+
+    confirmed =
+      confirm(
+
+        `Apakah Anda yakin ingin menghapus ` +
+        `soal nomor ${questionNumber}?`
+
+      );
 
   }
-);
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  // ---------------------------------------------------
+  // CEK APAKAH SOAL MASIH DIPAKAI ASESMEN LAIN
+  // ---------------------------------------------------
+
+  const {
+    data: otherLinks,
+    error: otherLinksError
+  } = await supabase
+    .from('assessment_questions')
+    .select(`
+      id,
+      assessment_id
+    `)
+    .eq(
+      'question_id',
+      questionId
+    );
+
+
+  if (otherLinksError) {
+
+    console.error(
+      'Gagal memeriksa penggunaan soal:',
+      otherLinksError
+    );
+
+    alert(
+      'Gagal memeriksa penggunaan soal: ' +
+      otherLinksError.message
+    );
+
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // HAPUS HUBUNGAN SOAL DARI ASESMEN INI
+  // ---------------------------------------------------
+
+  const {
+    error: linkDeleteError
+  } = await supabase
+    .from('assessment_questions')
+    .delete()
+    .eq(
+      'assessment_id',
+      assessmentId
+    )
+    .eq(
+      'question_id',
+      questionId
+    );
+
+
+  if (linkDeleteError) {
+
+    console.error(
+      'Gagal menghapus soal dari asesmen:',
+      linkDeleteError
+    );
+
+    alert(
+      'Gagal menghapus soal: ' +
+      linkDeleteError.message
+    );
+
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // CEK APAKAH MASIH TERHUBUNG DENGAN ASESMEN LAIN
+  // ---------------------------------------------------
+
+  const remainingLinks =
+    (otherLinks || []).filter(
+      link =>
+        link.assessment_id !==
+        assessmentId
+    );
+
+
+  // ---------------------------------------------------
+  // JIKA TIDAK DIPAKAI ASESMEN LAIN,
+  // HAPUS SOAL DARI BANK SOAL
+  // ---------------------------------------------------
+
+  if (
+    remainingLinks.length === 0
+  ) {
+
+    const {
+      error: questionDeleteError
+    } = await supabase
+      .from('questions')
+      .delete()
+      .eq(
+        'id',
+        questionId
+      )
+      .eq(
+        'teacher_id',
+        user.id
+      );
+
+
+    if (questionDeleteError) {
+
+      console.error(
+        'Gagal menghapus soal:',
+        questionDeleteError
+      );
+
+      alert(
+        'Hubungan soal sudah dihapus, ' +
+        'tetapi data soal gagal dihapus: ' +
+        questionDeleteError.message
+      );
+
+      await loadQuestions();
+
+      return;
+
+    }
+
+  }
+
+
+  // ---------------------------------------------------
+  // RAPIKAN NOMOR SOAL
+  // ---------------------------------------------------
+
+  await renumberQuestions();
+
+
+  // ---------------------------------------------------
+  // MUAT ULANG
+  // ---------------------------------------------------
+
+  await loadQuestions();
+
+}
+
+
+// =====================================================
+// RAPIKAN NOMOR SOAL
+// =====================================================
+
+async function renumberQuestions() {
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from('assessment_questions')
+    .select('id')
+    .eq(
+      'assessment_id',
+      assessmentId
+    )
+    .order(
+      'question_number',
+      {
+        ascending: true
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      'Gagal mengambil nomor soal:',
+      error
+    );
+
+    return;
+
+  }
+
+
+  if (!data) {
+    return;
+  }
+
+
+  for (
+    let index = 0;
+    index < data.length;
+    index++
+  ) {
+
+    const newNumber =
+      index + 1;
+
+
+    const {
+      error: updateError
+    } = await supabase
+      .from('assessment_questions')
+      .update({
+        question_number:
+          newNumber
+      })
+      .eq(
+        'id',
+        data[index].id
+      );
+
+
+    if (updateError) {
+
+      console.error(
+        'Gagal merapikan nomor soal:',
+        updateError
+      );
+
+    }
+
+  }
+
+}
+
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function escapeHtml(text) {
+
+  if (!text) {
+    return '';
+  }
+
+  return text
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+    .replace(
+      /</g,
+      '&lt;'
+    )
+    .replace(
+      />/g,
+      '&gt;'
+    )
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+
+}
 
 
 // =====================================================
@@ -764,6 +800,21 @@ tambahSoalButton.addEventListener(
 
 
 // =====================================================
+// TOMBOL KEMBALI
+// =====================================================
+
+kembaliButton.addEventListener(
+  'click',
+  () => {
+
+    window.location.href =
+      `kelola-asesmen.html?id=${assessmentId}`;
+
+  }
+);
+
+
+// =====================================================
 // LOGOUT
 // =====================================================
 
@@ -774,6 +825,7 @@ logoutButton.addEventListener(
     const {
       error
     } = await supabase.auth.signOut();
+
 
     if (error) {
 
@@ -786,6 +838,7 @@ logoutButton.addEventListener(
 
     }
 
+
     window.location.href =
       'index.html';
 
@@ -794,7 +847,7 @@ logoutButton.addEventListener(
 
 
 // =====================================================
-// JALANKAN HALAMAN
+// MULAI
 // =====================================================
 
 if (
