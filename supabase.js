@@ -39,6 +39,7 @@ loginForm.addEventListener('submit', async (event) => {
 console.log('User berhasil login:', data.user);
 
 setTimeout(() => {
+  alert('PERINTAH PINDAH HALAMAN DIJALANKAN');
   window.location.href = 'dashboard.html';
 }, 500);
 });
