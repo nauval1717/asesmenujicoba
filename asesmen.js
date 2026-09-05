@@ -120,7 +120,7 @@ async function loadAssessments() {
       <td>
         <button
           class="primary-button"
-          onclick="alert('Halaman detail asesmen akan kita buat berikutnya.')"
+          onclick="window.location.href='kelola-asesmen.html?id=${assessment.id}'"
         >
           Kelola
         </button>
