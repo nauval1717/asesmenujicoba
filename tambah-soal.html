@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Tambah Soal - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+
+        <a href="dashboard.html" class="menu">
+          🏠 Dashboard
+        </a>
+
+        <a href="asesmen.html" class="menu active">
+          📋 Asesmen
+        </a>
+
+        <a href="#" class="menu">
+          📚 Bank Soal
+        </a>
+
+        <a href="#" class="menu">
+          👨‍🎓 Siswa
+        </a>
+
+        <a href="#" class="menu">
+          🏫 Kelas
+        </a>
+
+        <a href="#" class="menu">
+          📊 Hasil
+        </a>
+
+        <a href="#" class="menu">
+          📈 Analisis Soal
+        </a>
+
+        <a href="#" class="menu">
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div>
+
+          <h1>Tambah Soal</h1>
+
+          <p>
+            Tambahkan soal pilihan ganda ke asesmen.
+          </p>
+
+        </div>
+
+        <div class="teacher-info">
+
+          👤 <span id="teacherName">
+            Guru
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <h2 id="assessmentTitle">
+              Memuat asesmen...
+            </h2>
+
+            <p id="assessmentInfo">
+              Memuat informasi asesmen...
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <form id="soalForm">
+
+          <div class="form-group">
+
+            <label for="questionText">
+              Pertanyaan
+            </label>
+
+            <textarea
+              id="questionText"
+              rows="6"
+              placeholder="Tuliskan pertanyaan..."
+              required
+            ></textarea>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="optionA">
+              Pilihan A
+            </label>
+
+            <input
+              type="text"
+              id="optionA"
+              placeholder="Masukkan pilihan A"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="optionB">
+              Pilihan B
+            </label>
+
+            <input
+              type="text"
+              id="optionB"
+              placeholder="Masukkan pilihan B"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="optionC">
+              Pilihan C
+            </label>
+
+            <input
+              type="text"
+              id="optionC"
+              placeholder="Masukkan pilihan C"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="optionD">
+              Pilihan D
+            </label>
+
+            <input
+              type="text"
+              id="optionD"
+              placeholder="Masukkan pilihan D"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="correctAnswer">
+              Jawaban Benar
+            </label>
+
+            <select
+              id="correctAnswer"
+              required
+            >
+
+              <option value="">
+                -- Pilih jawaban benar --
+              </option>
+
+              <option value="A">
+                A
+              </option>
+
+              <option value="B">
+                B
+              </option>
+
+              <option value="C">
+                C
+              </option>
+
+              <option value="D">
+                D
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="points">
+              Bobot Soal
+            </label>
+
+            <input
+              type="number"
+              id="points"
+              value="1"
+              min="0"
+              step="0.1"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-actions">
+
+            <button
+              type="button"
+              class="secondary-button"
+              id="batalButton"
+            >
+              Batal
+            </button>
+
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Simpan Soal
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script
+    type="module"
+    src="tambah-soal.js"
+  ></script>
+
+</body>
+
+</html>
