@@ -1,5 +1,10 @@
 import { supabase } from './supabase.js';
 
+
+// ===============================
+// ELEMENT HALAMAN
+// ===============================
+
 const teacherName =
   document.getElementById('teacherName');
 
@@ -21,6 +26,11 @@ const tambahSoalButton =
 const soalTable =
   document.getElementById('soalTable');
 
+
+// ===============================
+// AMBIL ID ASESMEN DARI URL
+// ===============================
+
 const params =
   new URLSearchParams(window.location.search);
 
@@ -37,8 +47,12 @@ const {
   error: userError
 } = await supabase.auth.getUser();
 
+
 if (userError || !user) {
-  window.location.href = 'index.html';
+
+  window.location.href =
+    'index.html';
+
 }
 
 
@@ -48,10 +62,13 @@ if (userError || !user) {
 
 if (!assessmentId) {
 
-  alert('ID asesmen tidak ditemukan.');
+  alert(
+    'ID asesmen tidak ditemukan.'
+  );
 
   window.location.href =
     'asesmen.html';
+
 }
 
 
@@ -70,12 +87,42 @@ if (user) {
     .eq('id', user.id)
     .single();
 
+
   if (!profileError && profile) {
 
     teacherName.textContent =
       profile.full_name;
 
   }
+
+}
+
+
+// ===============================
+// NAMA JENIS ASESMEN
+// ===============================
+
+function getTypeName(type) {
+
+  const types = {
+
+    daily:
+      'Penilaian Harian',
+
+    midterm:
+      'PTS',
+
+    final:
+      'PAS',
+
+    other:
+      'Lainnya'
+
+  };
+
+
+  return types[type] || type;
+
 }
 
 
@@ -145,28 +192,143 @@ async function loadAssessment() {
 
 
 // ===============================
-// NAMA JENIS ASESMEN
+// AMBIL DAFTAR SOAL
 // ===============================
 
-function getTypeName(type) {
+async function loadQuestions() {
 
-  const types = {
+  const {
+    data,
+    error
+  } = await supabase
+    .from('assessment_questions')
+    .select(`
+      id,
+      question_number,
+      points,
+      questions (
+        id,
+        question_text,
+        question_type
+      )
+    `)
+    .eq('assessment_id', assessmentId)
+    .order('question_number', {
+      ascending: true
+    });
 
-    daily:
-      'Penilaian Harian',
 
-    midterm:
-      'PTS',
+  if (error) {
 
-    final:
-      'PAS',
+    console.error(
+      'Gagal mengambil daftar soal:',
+      error
+    );
 
-    other:
-      'Lainnya'
+    soalTable.innerHTML = `
+      <tr>
+        <td
+          colspan="5"
+          class="empty-table"
+        >
+          Gagal memuat soal.
+        </td>
+      </tr>
+    `;
 
-  };
+    return;
 
-  return types[type] || type;
+  }
+
+
+  // ===============================
+  // JIKA BELUM ADA SOAL
+  // ===============================
+
+  if (!data || data.length === 0) {
+
+    soalTable.innerHTML = `
+      <tr>
+        <td
+          colspan="5"
+          class="empty-table"
+        >
+          Belum ada soal.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  // ===============================
+  // TAMPILKAN SOAL
+  // ===============================
+
+  soalTable.innerHTML = '';
+
+
+  data.forEach((item, index) => {
+
+    const question =
+      item.questions;
+
+
+    const questionText =
+      question?.question_text || '-';
+
+
+    const questionType =
+      question?.question_type ===
+      'multiple_choice'
+        ? 'Pilihan Ganda'
+        : question?.question_type || '-';
+
+
+    const points =
+      item.points ?? 0;
+
+
+    const row =
+      document.createElement('tr');
+
+
+    row.innerHTML = `
+      <td>
+        ${item.question_number || index + 1}
+      </td>
+
+      <td>
+        ${questionText}
+      </td>
+
+      <td>
+        ${questionType}
+      </td>
+
+      <td>
+        ${points}
+      </td>
+
+      <td>
+
+        <button
+          class="secondary-button"
+          type="button"
+          onclick="alert('Fitur edit soal akan dibuat setelah fitur tambah soal selesai.')"
+        >
+          Edit
+        </button>
+
+      </td>
+    `;
+
+
+    soalTable.appendChild(row);
+
+  });
 
 }
 
@@ -189,10 +351,6 @@ kembaliButton.addEventListener(
 // ===============================
 // TOMBOL TAMBAH SOAL
 // ===============================
-
-const tambahSoalButton =
-  document.getElementById('tambahSoalButton');
-
 
 tambahSoalButton.addEventListener(
   'click',
@@ -238,11 +396,13 @@ logoutButton.addEventListener(
 
 
 // ===============================
-// JALANKAN
+// JALANKAN HALAMAN
 // ===============================
 
 if (assessmentId && user) {
 
   await loadAssessment();
+
+  await loadQuestions();
 
 }
