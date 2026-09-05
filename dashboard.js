@@ -5,26 +5,49 @@ const teacherName = document.getElementById('teacherName');
 
 
 // CEK LOGIN
-const { data: { user } } = await supabase.auth.getUser();
+const { data: { user }, error: userError } =
+  await supabase.auth.getUser();
+
+if (userError) {
+  teacherName.textContent = 'Error login';
+  console.error('USER ERROR:', userError);
+}
 
 if (!user) {
   window.location.href = 'index.html';
 }
 
 
-// AMBIL DATA PROFIL GURU
+// AMBIL DATA PROFIL
 if (user) {
+
+  teacherName.textContent = 'Memuat...';
 
   console.log('USER ID:', user.id);
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user.id)
-    .single();
+  const { data: profile, error: profileError } =
+    await supabase
+      .from('profiles')
+      .select('full_name, role')
+      .eq('id', user.id)
+      .single();
 
-  if (!error && profile) {
+  console.log('PROFILE:', profile);
+  console.log('PROFILE ERROR:', profileError);
+
+  if (profileError) {
+
+    teacherName.textContent = 'Gagal membaca profil';
+
+    alert(
+      'Gagal membaca profil guru:\n' +
+      profileError.message
+    );
+
+  } else if (profile) {
+
     teacherName.textContent = profile.full_name;
+
   }
 
 }
