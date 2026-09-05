@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Asesmen - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+
+        <a href="dashboard.html" class="menu">
+          🏠 Dashboard
+        </a>
+
+        <a href="asesmen.html" class="menu active">
+          📋 Asesmen
+        </a>
+
+        <a href="#" class="menu">
+          📚 Bank Soal
+        </a>
+
+        <a href="#" class="menu">
+          👨‍🎓 Siswa
+        </a>
+
+        <a href="#" class="menu">
+          🏫 Kelas
+        </a>
+
+        <a href="#" class="menu">
+          📊 Hasil
+        </a>
+
+        <a href="#" class="menu">
+          📈 Analisis Soal
+        </a>
+
+        <a href="#" class="menu">
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <!-- KONTEN -->
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div>
+          <h1>Asesmen</h1>
+          <p>Kelola asesmen yang akan diberikan kepada siswa.</p>
+        </div>
+
+        <div class="teacher-info">
+          👤 <span id="teacherName">Guru</span>
+        </div>
+
+      </header>
+
+
+      <!-- HEADER ASESMEN -->
+
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+            <h2>Daftar Asesmen</h2>
+            <p>Belum ada asesmen yang dibuat.</p>
+          </div>
+
+          <button class="primary-button" id="buatAsesmenButton">
+            + Buat Asesmen
+          </button>
+
+        </div>
+
+
+        <!-- TABEL -->
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Nama Asesmen</th>
+                <th>Jenis</th>
+                <th>Kelas</th>
+                <th>Soal</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody id="asesmenTable">
+
+              <tr>
+                <td colspan="6" class="empty-table">
+                  Belum ada asesmen.
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script type="module" src="asesmen.js"></script>
+
+</body>
+</html>
