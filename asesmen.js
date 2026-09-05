@@ -52,7 +52,7 @@ if (user) {
 
 buatAsesmenButton.addEventListener('click', () => {
 
- window.location.href = 'buat-asesmen.html');
+ window.location.href = 'buat-asesmen.html';
 
 });
 
