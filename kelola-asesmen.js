@@ -208,7 +208,16 @@ if (assessmentId && user) {
   await loadAssessment();
 
 }
+const kelolaSoalButton =
+  document.getElementById('kelolaSoalButton');
 
+kelolaSoalButton.addEventListener(
+  'click',
+  () => {
+    window.location.href =
+      `kelola-soal.html?id=${assessmentId}`;
+  }
+);
 
 // ===============================
 // LOGOUT
