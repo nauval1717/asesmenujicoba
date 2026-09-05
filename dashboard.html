@@ -2,12 +2,141 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Guru</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard Guru - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
 </head>
+
 <body>
 
-  <h1>Dashboard Guru</h1>
-  <p>Login berhasil dan halaman dashboard berhasil dibuka.</p>
+  <div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+
+        <a href="#" class="menu active">
+          🏠 Dashboard
+        </a>
+
+        <a href="#" class="menu">
+          📋 Asesmen
+        </a>
+
+        <a href="#" class="menu">
+          📚 Bank Soal
+        </a>
+
+        <a href="#" class="menu">
+          👨‍🎓 Siswa
+        </a>
+
+        <a href="#" class="menu">
+          🏫 Kelas
+        </a>
+
+        <a href="#" class="menu">
+          📊 Hasil
+        </a>
+
+        <a href="#" class="menu">
+          📈 Analisis Soal
+        </a>
+
+        <a href="#" class="menu">
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <!-- KONTEN UTAMA -->
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div>
+          <h1>Dashboard Guru</h1>
+          <p>Selamat datang di sistem asesmen online.</p>
+        </div>
+
+        <div class="teacher-info">
+          👤 <span id="teacherName">Guru</span>
+        </div>
+
+      </header>
+
+
+      <!-- KARTU STATISTIK -->
+      <section class="stats">
+
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div>
+            <p>Total Asesmen</p>
+            <h2>0</h2>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📚</div>
+          <div>
+            <p>Total Soal</p>
+            <h2>0</h2>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">👨‍🎓</div>
+          <div>
+            <p>Total Siswa</p>
+            <h2>0</h2>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div>
+            <p>Hasil Ujian</p>
+            <h2>0</h2>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- AKTIVITAS -->
+      <section class="content-card">
+
+        <h2>Aktivitas Terbaru</h2>
+
+        <div class="empty-state">
+          <div>📋</div>
+          <p>Belum ada aktivitas.</p>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script type="module" src="dashboard.js"></script>
 
 </body>
 </html>
