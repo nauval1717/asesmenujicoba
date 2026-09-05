@@ -190,13 +190,16 @@ kembaliButton.addEventListener(
 // TOMBOL TAMBAH SOAL
 // ===============================
 
+const tambahSoalButton =
+  document.getElementById('tambahSoalButton');
+
+
 tambahSoalButton.addEventListener(
   'click',
   () => {
 
-    alert(
-      'Fitur tambah soal akan kita buat pada langkah berikutnya.'
-    );
+    window.location.href =
+      `tambah-soal.html?id=${assessmentId}`;
 
   }
 );
