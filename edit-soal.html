@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Edit Soal - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+
+  <style>
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .secondary-button {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .secondary-button:hover {
+      background: #f3f4f6;
+    }
+
+    .danger-button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .danger-button:hover {
+      background: #b91c1c;
+    }
+
+    .question-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #ffffff;
+    }
+
+    .question-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .question-card-header h3 {
+      margin: 0;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .option-label {
+      width: 32px;
+      min-width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-content input {
+      margin-bottom: 8px;
+    }
+
+    .remove-option-button {
+      border: none;
+      background: #fee2e2;
+      color: #b91c1c;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .correct-options {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .correct-option {
+      display: flex !important;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500 !important;
+      margin: 0 !important;
+      cursor: pointer;
+    }
+
+    .correct-option input {
+      width: auto !important;
+    }
+
+    .stimulus-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 25px;
+    }
+
+    .stimulus-box h3 {
+      margin-top: 0;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+    }
+
+    .image-preview {
+      display: none;
+      max-width: 300px;
+      max-height: 200px;
+      margin-top: 10px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+      <div class="logo">
+
+        <h2>Asesmen Online</h2>
+
+        <p>Dashboard Guru</p>
+
+      </div>
+
+      <nav>
+
+        <a
+          href="dashboard.html"
+          class="menu"
+        >
+          🏠 Dashboard
+        </a>
+
+        <a
+          href="asesmen.html"
+          class="menu active"
+        >
+          📋 Asesmen
+        </a>
+
+        <a
+          href="#"
+          class="menu"
+        >
+          📚 Bank Soal
+        </a>
+
+        <a
+          href="#"
+          class="menu"
+        >
+          👨‍🎓 Siswa
+        </a>
+
+        <a
+          href="#"
+          class="menu"
+        >
+          🏫 Kelas
+        </a>
+
+        <a
+          href="#"
+          class="menu"
+        >
+          📊 Hasil
+        </a>
+
+        <a
+          href="#"
+          class="menu"
+        >
+          📈 Analisis Soal
+        </a>
+
+        <a
+          href="#"
+          class="menu"
+        >
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button
+        id="logoutButton"
+        class="logout"
+      >
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+
+      <header class="topbar">
+
+        <div>
+
+          <h1>Edit Soal</h1>
+
+          <p>
+            Ubah soal dan pengaturan jawabannya.
+          </p>
+
+        </div>
+
+        <div class="teacher-info">
+
+          👤
+
+          <span id="teacherName">
+            Guru
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- INFORMASI ASESMEN -->
+
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <h2 id="assessmentTitle">
+              Memuat asesmen...
+            </h2>
+
+            <p id="assessmentInfo">
+              Memuat informasi asesmen...
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="kembaliButton"
+          >
+            ← Kembali
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- FORM EDIT -->
+
+      <form
+        id="editSoalForm"
+      >
+
+        <!-- STIMULUS -->
+
+        <section
+          class="content-card hidden"
+          id="stimulusSection"
+        >
+
+          <div class="stimulus-box">
+
+            <h3>
+              📖 Stimulus
+            </h3>
+
+            <div class="info-box">
+
+              Soal-soal berikut menggunakan
+              stimulus yang sama.
+
+              Perubahan stimulus akan berlaku
+              untuk semua soal dalam kelompok ini.
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="stimulusTitle">
+                Judul Stimulus
+              </label>
+
+              <input
+                type="text"
+                id="stimulusTitle"
+                placeholder="Contoh: Bacalah teks berikut"
+              >
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="stimulusContent">
+                Isi Stimulus
+              </label>
+
+              <textarea
+                id="stimulusContent"
+                rows="8"
+                placeholder="Tuliskan teks stimulus..."
+              ></textarea>
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="stimulusImageUrl">
+                Gambar Stimulus
+              </label>
+
+              <input
+                type="url"
+                id="stimulusImageUrl"
+                placeholder="https://..."
+              >
+
+              <small>
+                Gambar stimulus bersifat opsional.
+              </small>
+
+              <img
+                id="stimulusImagePreview"
+                class="image-preview"
+                alt="Preview gambar stimulus"
+              >
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- DAFTAR SOAL -->
+
+        <section class="content-card">
+
+          <div class="page-header">
+
+            <div>
+
+              <h2>
+                Daftar Soal
+              </h2>
+
+              <p>
+                Edit soal yang terdapat dalam asesmen.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="questionContainer"
+          >
+
+            <!-- Soal akan dibuat oleh JavaScript -->
+
+          </div>
+
+
+          <div class="form-actions">
+
+            <button
+              type="button"
+              class="secondary-button"
+              id="tambahSoalButton"
+            >
+              + Tambah Soal
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <!-- TOMBOL SIMPAN -->
+
+        <section class="content-card">
+
+          <div class="form-actions">
+
+            <button
+              type="button"
+              class="secondary-button"
+              id="batalButton"
+            >
+              Batal
+            </button>
+
+            <button
+              type="submit"
+              class="primary-button"
+              id="simpanButton"
+            >
+              💾 Simpan Perubahan
+            </button>
+
+          </div>
+
+        </section>
+
+      </form>
+
+    </main>
+
+  </div>
+
+
+  <script
+    type="module"
+    src="edit-soal.js"
+  ></script>
+
+</body>
+
+</html>
