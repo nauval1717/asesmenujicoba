@@ -228,11 +228,11 @@ function escapeHtml(text) {
       '&amp;'
     )
     .replace(
-      /</g,
+      /&lt;/g,
       '&lt;'
     )
     .replace(
-      />/g,
+      /&gt;/g,
       '&gt;'
     )
     .replace(
@@ -913,8 +913,12 @@ function createQuestionCard(
   }
 
 
+  // Tampilkan jawaban benar yang tersimpan
   updateCorrectOptions(
-    card
+    card,
+    options
+      .filter(option => option.is_correct)
+      .map(option => option.option_label)
   );
 
 
@@ -1243,7 +1247,8 @@ function renumberOptions(card) {
 // =====================================================
 
 function updateCorrectOptions(
-  card
+  card,
+  initialSelected = null
 ) {
 
   const container =
@@ -1259,13 +1264,15 @@ function updateCorrectOptions(
 
 
   const previousSelected =
-    Array.from(
-      container.querySelectorAll(
-        'input:checked'
-      )
-    ).map(
-      input => input.value
-    );
+    initialSelected !== null
+      ? initialSelected
+      : Array.from(
+          container.querySelectorAll(
+            'input:checked'
+          )
+        ).map(
+          input => input.value
+        );
 
 
   container.innerHTML =
