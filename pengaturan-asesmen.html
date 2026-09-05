@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Pengaturan Asesmen - Asesmen Online</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+
+  <style>
+    .setting-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+      background: #ffffff;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .setting-item:first-child {
+      padding-top: 0;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .setting-text {
+      flex: 1;
+    }
+
+    .setting-text h3 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+    }
+
+    .setting-text p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      min-width: 52px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #d1d5db;
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      top: 3px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .switch input:checked + .slider {
+      background: #2563eb;
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .warning-box {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 18px;
+      line-height: 1.5;
+    }
+
+    .status-message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .status-message.success {
+      display: block;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-message.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .save-button-area {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .setting-item {
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+
+        <a href="dashboard.html" class="menu">
+          🏠 Dashboard
+        </a>
+
+        <a href="asesmen.html" class="menu active">
+          📋 Asesmen
+        </a>
+
+        <a href="#" class="menu">
+          📚 Bank Soal
+        </a>
+
+        <a href="#" class="menu">
+          👨‍🎓 Siswa
+        </a>
+
+        <a href="#" class="menu">
+          🏫 Kelas
+        </a>
+
+        <a href="#" class="menu">
+          📊 Hasil
+        </a>
+
+        <a href="#" class="menu">
+          📈 Analisis Soal
+        </a>
+
+        <a href="#" class="menu">
+          ⚙️ Pengaturan
+        </a>
+
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <div>
+
+          <h1>Pengaturan Asesmen</h1>
+
+          <p>
+            Atur cara soal dan pilihan jawaban ditampilkan kepada siswa.
+          </p>
+
+        </div>
+
+        <div class="teacher-info">
+          👤 <span id="teacherName">Guru</span>
+        </div>
+
+      </header>
+
+
+      <!-- INFORMASI ASESMEN -->
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <h2 id="assessmentTitle">
+              Memuat asesmen...
+            </h2>
+
+            <p id="assessmentInfo">
+              Memuat informasi asesmen...
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="kembaliButton"
+          >
+            ← Kembali
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- PENGATURAN -->
+      <section class="content-card">
+
+        <div class="setting-card">
+
+          <div class="info-box">
+
+            <strong>💡 Pengaturan pengacakan</strong>
+
+            <br>
+
+            Pengaturan berikut menentukan bagaimana soal ditampilkan
+            kepada siswa saat mengerjakan asesmen.
+
+          </div>
+
+
+          <!-- ACAK SOAL -->
+          <div class="setting-item">
+
+            <div class="setting-text">
+
+              <h3>
+                🔀 Acak Urutan Soal
+              </h3>
+
+              <p>
+                Urutan soal akan diacak untuk setiap siswa.
+                Pengacakan akan mengikuti aturan kelompok jenis soal
+                yang kita tetapkan pada sistem.
+              </p>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="shuffleQuestions"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- ACAK PILIHAN -->
+          <div class="setting-item">
+
+            <div class="setting-text">
+
+              <h3>
+                🔤 Acak Pilihan Jawaban
+              </h3>
+
+              <p>
+                Urutan pilihan jawaban akan diacak untuk setiap siswa.
+                Jawaban benar tetap mengikuti isi pilihan, bukan huruf
+                A, B, C, atau D.
+              </p>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="shuffleOptions"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- STIMULUS -->
+          <div class="setting-item">
+
+            <div class="setting-text">
+
+              <h3>
+                📖 Pertahankan Urutan Soal dalam Stimulus
+              </h3>
+
+              <p>
+                Jika beberapa soal menggunakan stimulus yang sama,
+                soal-soal tersebut tetap berada dalam urutan yang sama.
+                Kelompok stimulus dapat berpindah sebagai satu kelompok.
+              </p>
+
+            </div>
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                id="keepStimulusOrder"
+              >
+
+              <span class="slider"></span>
+
+            </label>
+
+          </div>
+
+
+          <div class="warning-box">
+
+            <strong>⚠️ Catatan</strong>
+
+            <br>
+
+            Pengaturan ini baru menentukan aturan asesmen.
+            Pengacakan yang sebenarnya akan diterapkan pada halaman
+            siswa ketika sistem pengerjaan asesmen dibuat.
+
+          </div>
+
+
+          <!-- STATUS -->
+          <div
+            id="statusMessage"
+            class="status-message"
+          ></div>
+
+
+          <!-- BUTTON SIMPAN -->
+          <div class="save-button-area">
+
+            <button
+              type="button"
+              class="primary-button"
+              id="simpanButton"
+            >
+              💾 Simpan Pengaturan
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script
+    type="module"
+    src="pengaturan-asesmen.js"
+  ></script>
+
+</body>
+</html>
