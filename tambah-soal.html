@@ -14,6 +14,10 @@
 
   <div class="dashboard">
 
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
     <aside class="sidebar">
 
       <div class="logo">
@@ -57,14 +61,26 @@
 
       </nav>
 
-      <button id="logoutButton" class="logout">
+      <button
+        id="logoutButton"
+        class="logout"
+      >
         🚪 Keluar
       </button>
 
     </aside>
 
 
+    <!-- =========================
+         KONTEN UTAMA
+    ========================== -->
+
     <main class="main-content">
+
+
+      <!-- =========================
+           TOPBAR
+      ========================== -->
 
       <header class="topbar">
 
@@ -80,7 +96,8 @@
 
         <div class="teacher-info">
 
-          👤 <span id="teacherName">
+          👤
+          <span id="teacherName">
             Guru
           </span>
 
@@ -88,6 +105,10 @@
 
       </header>
 
+
+      <!-- =========================
+           INFORMASI ASESMEN
+      ========================== -->
 
       <section class="content-card">
 
@@ -107,8 +128,161 @@
 
         </div>
 
+      </section>
+
+
+      <!-- =========================
+           FORM SOAL
+      ========================== -->
+
+      <section class="content-card">
 
         <form id="soalForm">
+
+
+          <!-- =========================
+               STIMULUS
+          ========================== -->
+
+          <div class="form-group">
+
+            <label for="stimulusSelect">
+              Stimulus
+            </label>
+
+            <select id="stimulusSelect">
+
+              <option value="">
+                -- Soal tanpa stimulus --
+              </option>
+
+            </select>
+
+            <small>
+              Pilih stimulus jika soal menggunakan bacaan,
+              gambar, tabel, atau informasi yang sama dengan
+              beberapa soal lainnya.
+            </small>
+
+          </div>
+
+
+          <!-- =========================
+               TOMBOL BUAT STIMULUS
+          ========================== -->
+
+          <div class="form-actions">
+
+            <button
+              type="button"
+              class="secondary-button"
+              id="buatStimulusButton"
+            >
+              + Buat Stimulus Baru
+            </button>
+
+          </div>
+
+
+          <!-- =========================
+               FORM STIMULUS BARU
+          ========================== -->
+
+          <div
+            id="stimulusFormContainer"
+            style="display: none;"
+          >
+
+            <div class="content-card">
+
+              <h3>
+                Buat Stimulus Baru
+              </h3>
+
+              <p>
+                Stimulus dapat digunakan oleh beberapa soal.
+              </p>
+
+
+              <div class="form-group">
+
+                <label for="stimulusTitle">
+                  Judul Stimulus
+                </label>
+
+                <input
+                  type="text"
+                  id="stimulusTitle"
+                  placeholder="Contoh: Bacaan Sistem Peredaran Darah"
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="stimulusContent">
+                  Isi Stimulus
+                </label>
+
+                <textarea
+                  id="stimulusContent"
+                  rows="8"
+                  placeholder="Tuliskan bacaan, informasi, kasus, atau teks yang menjadi stimulus..."
+                ></textarea>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label for="stimulusImageUrl">
+                  URL Gambar Stimulus
+                </label>
+
+                <input
+                  type="url"
+                  id="stimulusImageUrl"
+                  placeholder="https://..."
+                >
+
+                <small>
+                  Untuk sementara gambar menggunakan URL.
+                  Fitur upload gambar langsung akan kita buat
+                  pada tahap berikutnya.
+                </small>
+
+              </div>
+
+
+              <div class="form-actions">
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  id="batalStimulusButton"
+                >
+                  Batal
+                </button>
+
+                <button
+                  type="button"
+                  class="primary-button"
+                  id="simpanStimulusButton"
+                >
+                  Simpan Stimulus
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =========================
+               PERTANYAAN
+          ========================== -->
 
           <div class="form-group">
 
@@ -126,6 +300,10 @@
           </div>
 
 
+          <!-- =========================
+               PILIHAN A
+          ========================== -->
+
           <div class="form-group">
 
             <label for="optionA">
@@ -141,6 +319,10 @@
 
           </div>
 
+
+          <!-- =========================
+               PILIHAN B
+          ========================== -->
 
           <div class="form-group">
 
@@ -158,6 +340,10 @@
           </div>
 
 
+          <!-- =========================
+               PILIHAN C
+          ========================== -->
+
           <div class="form-group">
 
             <label for="optionC">
@@ -174,6 +360,10 @@
           </div>
 
 
+          <!-- =========================
+               PILIHAN D
+          ========================== -->
+
           <div class="form-group">
 
             <label for="optionD">
@@ -189,6 +379,10 @@
 
           </div>
 
+
+          <!-- =========================
+               JAWABAN BENAR
+          ========================== -->
 
           <div class="form-group">
 
@@ -226,6 +420,10 @@
           </div>
 
 
+          <!-- =========================
+               BOBOT SOAL
+          ========================== -->
+
           <div class="form-group">
 
             <label for="points">
@@ -241,8 +439,16 @@
               required
             >
 
+            <small>
+              Bobot dapat berbeda untuk setiap soal.
+            </small>
+
           </div>
 
+
+          <!-- =========================
+               TOMBOL FORM
+          ========================== -->
 
           <div class="form-actions">
 
@@ -263,14 +469,20 @@
 
           </div>
 
+
         </form>
 
       </section>
+
 
     </main>
 
   </div>
 
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
 
   <script
     type="module"
