@@ -1,6 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const supabaseUrl = 'https://zwiygbrztjxyixgarghe.supabase.co/rest/v1/';
+const supabaseUrl = 'https://zwiygbrztjxyixgarghe.supabase.co';
 const supabaseKey = 'sb_publishable_iQu9fh12URcdy7o7U7nTvA_SX2rt7q-';
 
 export const supabase = createClient(
