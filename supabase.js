@@ -36,5 +36,9 @@ loginForm.addEventListener('submit', async (event) => {
 
   message.textContent = 'Login berhasil!';
 
-  console.log('User berhasil login:', data.user);
+console.log('User berhasil login:', data.user);
+
+setTimeout(() => {
+  window.location.href = 'dashboard.html';
+}, 500);
 });
