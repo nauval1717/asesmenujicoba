@@ -3,44 +3,25 @@ import { supabase } from './supabase.js';
 const params = new URLSearchParams(window.location.search);
 const assessmentId = params.get('id');
 
-const assessmentTitle =
-  document.getElementById('assessmentTitle');
+// Elemen halaman
+const assessmentTitle = document.getElementById('assessmentTitle');
+const assessmentType = document.getElementById('assessmentType');
+const assessmentSubject = document.getElementById('assessmentSubject');
+const assessmentClass = document.getElementById('assessmentClass');
+const assessmentDuration = document.getElementById('assessmentDuration');
+const assessmentStatus = document.getElementById('assessmentStatus');
+const questionCount = document.getElementById('questionCount');
+const teacherName = document.getElementById('teacherName');
 
-const assessmentType =
-  document.getElementById('assessmentType');
+const kelolaSoalButton = document.getElementById('kelolaSoalButton');
+const pengaturanButton = document.getElementById('pengaturanButton');
+const kembaliButton = document.getElementById('kembaliButton');
+const aktifkanButton = document.getElementById('aktifkanButton');
 
-const assessmentSubject =
-  document.getElementById('assessmentSubject');
 
-const assessmentClass =
-  document.getElementById('assessmentClass');
-
-const assessmentDuration =
-  document.getElementById('assessmentDuration');
-
-const assessmentStatus =
-  document.getElementById('assessmentStatus');
-
-const questionCount =
-  document.getElementById('questionCount');
-
-const teacherName =
-  document.getElementById('teacherName');
-
-const kelolaSoalButton =
-  document.getElementById('kelolaSoalButton');
-
-const pengaturanButton =
-  document.getElementById('pengaturanButton');
-
-const logoutButton =
-  document.getElementById('logoutButton');
-
-const kembaliButton =
-  document.getElementById('kembaliButton');
-
-const aktifkanButton =
-  document.getElementById('aktifkanButton');
+// ===============================
+// CEK LOGIN
+// ===============================
 
 async function checkLogin() {
   const {
@@ -56,6 +37,11 @@ async function checkLogin() {
   return user;
 }
 
+
+// ===============================
+// FORMAT DATA
+// ===============================
+
 function getTypeName(type) {
   const types = {
     daily: 'Ulangan Harian',
@@ -68,6 +54,7 @@ function getTypeName(type) {
   return types[type] || type || '-';
 }
 
+
 function getStatusName(status) {
   const statuses = {
     draft: 'Draft',
@@ -79,6 +66,7 @@ function getStatusName(status) {
   return statuses[status] || status || '-';
 }
 
+
 function getDurationText(minutes) {
   if (!minutes) {
     return 'Tidak dibatasi';
@@ -87,34 +75,90 @@ function getDurationText(minutes) {
   return `${minutes} menit`;
 }
 
+
+// ===============================
+// LOAD PROFIL GURU
+// ===============================
+
 async function loadTeacherProfile(user) {
-  const {
-    data: profile,
-    error
-  } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('full_name')
     .eq('id', user.id)
     .single();
 
   if (error) {
-    console.error(
-      'Gagal mengambil profil guru:',
-      error
-    );
+    console.error('Gagal mengambil profil guru:', error);
 
+    teacherName.textContent = 'Guru';
     return;
   }
 
-  teacherName.textContent =
-    profile?.full_name || 'Guru';
+  teacherName.textContent = profile?.full_name || 'Guru';
 }
 
+
+// ===============================
+// LOAD NAMA MATA PELAJARAN
+// ===============================
+
+async function loadSubjectName(subjectId) {
+  if (!subjectId) {
+    return '-';
+  }
+
+  const { data, error } = await supabase
+    .from('subjects')
+    .select('name')
+    .eq('id', subjectId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Gagal mengambil mata pelajaran:', error);
+    return '-';
+  }
+
+  return data?.name || '-';
+}
+
+
+// ===============================
+// LOAD NAMA KELAS
+// ===============================
+
+async function loadClassName(classId) {
+  if (!classId) {
+    return '-';
+  }
+
+  const { data, error } = await supabase
+    .from('classes')
+    .select('name')
+    .eq('id', classId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Gagal mengambil kelas:', error);
+    return '-';
+  }
+
+  return data?.name || '-';
+}
+
+
+// ===============================
+// LOAD ASESMEN
+// ===============================
+
 async function loadAssessment(user) {
-  const {
-    data: assessment,
-    error
-  } = await supabase
+
+  assessmentTitle.textContent = 'Memuat asesmen...';
+  assessmentSubject.textContent = '-';
+  assessmentClass.textContent = '-';
+  assessmentDuration.textContent = '-';
+  assessmentStatus.textContent = 'Memuat...';
+
+  const { data: assessment, error } = await supabase
     .from('assessments')
     .select(`
       id,
@@ -124,71 +168,86 @@ async function loadAssessment(user) {
       description,
       duration_minutes,
       status,
-      subjects (
-        name
-      ),
-      classes (
-        name
-      )
+      subject_id,
+      class_id
     `)
     .eq('id', assessmentId)
     .eq('teacher_id', user.id)
-    .single();
+    .maybeSingle();
 
   if (error) {
-    console.error(
-      'Gagal mengambil asesmen:',
-      error
+    console.error('Gagal mengambil asesmen:', error);
+
+    assessmentTitle.textContent = 'Gagal memuat asesmen';
+    assessmentStatus.textContent = '-';
+
+    alert(
+      'Gagal mengambil data asesmen.\n\n' +
+      error.message
     );
+
+    return false;
+  }
+
+  if (!assessment) {
+    console.error('Asesmen tidak ditemukan.');
+
+    assessmentTitle.textContent = 'Asesmen tidak ditemukan';
+    assessmentStatus.textContent = '-';
 
     alert(
       'Asesmen tidak ditemukan atau Anda tidak memiliki akses.'
     );
 
-    window.location.href =
-      'asesmen.html';
-
-    return null;
+    return false;
   }
 
+  console.log('Data asesmen berhasil:', assessment);
+
+  // Tampilkan data utama
   assessmentTitle.textContent =
-    assessment.title;
+    assessment.title || 'Tanpa Judul';
 
   assessmentType.textContent =
     getTypeName(assessment.type);
 
-  assessmentSubject.textContent =
-    assessment.subjects?.name || '-';
-
-  assessmentClass.textContent =
-    assessment.classes?.name || '-';
-
   assessmentDuration.textContent =
-    getDurationText(
-      assessment.duration_minutes
-    );
+    getDurationText(assessment.duration_minutes);
 
   assessmentStatus.textContent =
-    getStatusName(
-      assessment.status
-    );
+    getStatusName(assessment.status);
 
-  return assessment;
+
+  // Ambil mata pelajaran dan kelas secara terpisah
+  const subjectName = await loadSubjectName(
+    assessment.subject_id
+  );
+
+  const className = await loadClassName(
+    assessment.class_id
+  );
+
+  assessmentSubject.textContent = subjectName;
+  assessmentClass.textContent = className;
+
+  return true;
 }
 
+
+// ===============================
+// LOAD JUMLAH SOAL
+// ===============================
+
 async function loadQuestionCount() {
-  const {
-    count,
-    error
-  } = await supabase
+
+  questionCount.textContent = '...';
+
+  const { count, error } = await supabase
     .from('assessment_questions')
-    .select(
-      'id',
-      {
-        count: 'exact',
-        head: true
-      }
-    )
+    .select('id', {
+      count: 'exact',
+      head: true
+    })
     .eq('assessment_id', assessmentId);
 
   if (error) {
@@ -198,80 +257,99 @@ async function loadQuestionCount() {
     );
 
     questionCount.textContent = '0';
-
     return;
   }
 
-  questionCount.textContent =
-    count ?? 0;
+  questionCount.textContent = count ?? 0;
 }
 
-kelolaSoalButton.addEventListener(
-  'click',
-  () => {
-    window.location.href =
-      `kelola-soal.html?id=${assessmentId}`;
-  }
-);
 
-pengaturanButton.addEventListener(
-  'click',
-  () => {
-    window.location.href =
-      `pengaturan-asesmen.html?id=${assessmentId}`;
-  }
-);
+// ===============================
+// TOMBOL KELOLA SOAL
+// ===============================
 
-kembaliButton.addEventListener(
-  'click',
-  () => {
-    window.location.href =
-      'asesmen.html';
-  }
-);
+kelolaSoalButton.addEventListener('click', () => {
+  window.location.href =
+    `kelola-soal.html?id=${assessmentId}`;
+});
 
-logoutButton.addEventListener(
-  'click',
-  async () => {
-    await supabase.auth.signOut();
 
-    window.location.href =
-      'index.html';
-  }
-);
+// ===============================
+// TOMBOL PENGATURAN
+// ===============================
 
-aktifkanButton.addEventListener(
-  'click',
-  () => {
-    alert(
-      'Fitur aktivasi asesmen akan kita buat pada tahap berikutnya.'
-    );
-  }
-);
+pengaturanButton.addEventListener('click', () => {
+  window.location.href =
+    `pengaturan-asesmen.html?id=${assessmentId}`;
+});
+
+
+// ===============================
+// TOMBOL KEMBALI
+// ===============================
+
+kembaliButton.addEventListener('click', () => {
+  window.location.href = 'asesmen.html';
+});
+
+
+// ===============================
+// TOMBOL AKTIFKAN
+// ===============================
+
+aktifkanButton.addEventListener('click', () => {
+  alert(
+    'Fitur aktivasi asesmen akan kita buat pada tahap berikutnya.'
+  );
+});
+
+
+// ===============================
+// INIT
+// ===============================
 
 async function init() {
-  if (!assessmentId) {
-    alert(
-      'ID asesmen tidak ditemukan.'
-    );
 
-    window.location.href =
-      'asesmen.html';
+  // Pastikan ID asesmen ada
+  if (!assessmentId) {
+    alert('ID asesmen tidak ditemukan.');
+
+    window.location.href = 'asesmen.html';
 
     return;
   }
 
-  const user =
-    await checkLogin();
+  console.log(
+    'ID asesmen:',
+    assessmentId
+  );
+
+  // Cek login
+  const user = await checkLogin();
 
   if (!user) {
     return;
   }
 
+  console.log(
+    'Guru login:',
+    user.id
+  );
+
+  // Load profil
   await loadTeacherProfile(user);
 
-  await loadAssessment(user);
+  // Load asesmen
+  const assessmentLoaded =
+    await loadAssessment(user);
 
+  // Kalau asesmen gagal dimuat,
+  // jangan lanjutkan proses lain
+  if (!assessmentLoaded) {
+    return;
+  }
+
+  // Load jumlah soal
   await loadQuestionCount();
 }
 
