@@ -1,215 +1,210 @@
 import { supabase } from './supabase.js';
 
-const teacherName = document.getElementById('teacherName');
-const logoutButton = document.getElementById('logoutButton');
+const params = new URLSearchParams(window.location.search);
+const assessmentId = params.get('id');
 
 const assessmentTitle =
   document.getElementById('assessmentTitle');
 
-const assessmentInfo =
-  document.getElementById('assessmentInfo');
+const assessmentType =
+  document.getElementById('assessmentType');
 
-const questionCount =
-  document.getElementById('questionCount');
+const assessmentSubject =
+  document.getElementById('assessmentSubject');
 
-const duration =
-  document.getElementById('duration');
+const assessmentClass =
+  document.getElementById('assessmentClass');
+
+const assessmentDuration =
+  document.getElementById('assessmentDuration');
 
 const assessmentStatus =
   document.getElementById('assessmentStatus');
 
+const questionCount =
+  document.getElementById('questionCount');
 
-// ===============================
-// AMBIL ID ASESMEN DARI URL
-// ===============================
+const teacherName =
+  document.getElementById('teacherName');
 
-const params = new URLSearchParams(window.location.search);
+const kelolaSoalButton =
+  document.getElementById('kelolaSoalButton');
 
-const assessmentId = params.get('id');
+const pengaturanButton =
+  document.getElementById('pengaturanButton');
 
+const logoutButton =
+  document.getElementById('logoutButton');
 
-// ===============================
-// CEK LOGIN
-// ===============================
+const kembaliButton =
+  document.getElementById('kembaliButton');
 
-const { data: { user }, error: userError } =
-  await supabase.auth.getUser();
+const aktifkanButton =
+  document.getElementById('aktifkanButton');
 
-if (userError || !user) {
+async function checkLogin() {
+  const {
+    data: { user },
+    error
+  } = await supabase.auth.getUser();
 
-  window.location.href = 'index.html';
-
-}
-
-
-// ===============================
-// JIKA ID ASESMEN TIDAK ADA
-// ===============================
-
-if (!assessmentId) {
-
-  alert('ID asesmen tidak ditemukan.');
-
-  window.location.href = 'asesmen.html';
-
-}
-
-
-// ===============================
-// AMBIL PROFIL GURU
-// ===============================
-
-if (user) {
-
-  const { data: profile, error: profileError } =
-    await supabase
-      .from('profiles')
-      .select('full_name')
-      .eq('id', user.id)
-      .single();
-
-  if (!profileError && profile) {
-
-    teacherName.textContent =
-      profile.full_name;
-
+  if (error || !user) {
+    window.location.href = 'index.html';
+    return null;
   }
 
+  return user;
 }
 
+function getTypeName(type) {
+  const types = {
+    daily: 'Ulangan Harian',
+    midterm: 'PTS / Ujian Tengah Semester',
+    final: 'PAS / Ujian Akhir Semester',
+    practice: 'Latihan',
+    other: 'Lainnya'
+  };
 
-// ===============================
-// AMBIL DATA ASESMEN
-// ===============================
+  return types[type] || type || '-';
+}
 
-async function loadAssessment() {
+function getStatusName(status) {
+  const statuses = {
+    draft: 'Draft',
+    ready: 'Siap',
+    active: 'Aktif',
+    completed: 'Selesai'
+  };
 
-  const { data, error } =
-    await supabase
-      .from('assessments')
-      .select(`
-        id,
-        title,
-        type,
-        description,
-        duration_minutes,
-        status,
-        subjects(name),
-        classes(name)
-      `)
-      .eq('id', assessmentId)
-      .eq('teacher_id', user.id)
-      .single();
+  return statuses[status] || status || '-';
+}
 
+function getDurationText(minutes) {
+  if (!minutes) {
+    return 'Tidak dibatasi';
+  }
+
+  return `${minutes} menit`;
+}
+
+async function loadTeacherProfile(user) {
+  const {
+    data: profile,
+    error
+  } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', user.id)
+    .single();
 
   if (error) {
+    console.error(
+      'Gagal mengambil profil guru:',
+      error
+    );
 
+    return;
+  }
+
+  teacherName.textContent =
+    profile?.full_name || 'Guru';
+}
+
+async function loadAssessment(user) {
+  const {
+    data: assessment,
+    error
+  } = await supabase
+    .from('assessments')
+    .select(`
+      id,
+      teacher_id,
+      title,
+      type,
+      description,
+      duration_minutes,
+      status,
+      subjects (
+        name
+      ),
+      classes (
+        name
+      )
+    `)
+    .eq('id', assessmentId)
+    .eq('teacher_id', user.id)
+    .single();
+
+  if (error) {
     console.error(
       'Gagal mengambil asesmen:',
       error
     );
 
     alert(
-      'Data asesmen tidak dapat ditemukan.'
+      'Asesmen tidak ditemukan atau Anda tidak memiliki akses.'
     );
 
     window.location.href =
       'asesmen.html';
 
-    return;
-
+    return null;
   }
 
-
-  // ===============================
-  // TAMPILKAN DATA
-  // ===============================
-
   assessmentTitle.textContent =
-    data.title;
+    assessment.title;
 
+  assessmentType.textContent =
+    getTypeName(assessment.type);
 
-  const subjectName =
-    data.subjects?.name || '-';
+  assessmentSubject.textContent =
+    assessment.subjects?.name || '-';
 
-  const className =
-    data.classes?.name || '-';
+  assessmentClass.textContent =
+    assessment.classes?.name || '-';
 
-
-  assessmentInfo.textContent =
-    `${getTypeName(data.type)} • ${subjectName} • Kelas ${className}`;
-
-
-  duration.textContent =
-    data.duration_minutes
-      ? `${data.duration_minutes} menit`
-      : '-';
-
+  assessmentDuration.textContent =
+    getDurationText(
+      assessment.duration_minutes
+    );
 
   assessmentStatus.textContent =
-    getStatusName(data.status);
+    getStatusName(
+      assessment.status
+    );
 
-
-  // Untuk sementara jumlah soal 0
-  questionCount.textContent = '0';
-
+  return assessment;
 }
 
+async function loadQuestionCount() {
+  const {
+    count,
+    error
+  } = await supabase
+    .from('assessment_questions')
+    .select(
+      'id',
+      {
+        count: 'exact',
+        head: true
+      }
+    )
+    .eq('assessment_id', assessmentId);
 
-// ===============================
-// NAMA JENIS ASESMEN
-// ===============================
+  if (error) {
+    console.error(
+      'Gagal menghitung jumlah soal:',
+      error
+    );
 
-function getTypeName(type) {
+    questionCount.textContent = '0';
 
-  const types = {
+    return;
+  }
 
-    daily: 'Penilaian Harian',
-
-    midterm: 'PTS',
-
-    final: 'PAS',
-
-    other: 'Lainnya'
-
-  };
-
-  return types[type] || type;
-
+  questionCount.textContent =
+    count ?? 0;
 }
-
-
-// ===============================
-// NAMA STATUS
-// ===============================
-
-function getStatusName(status) {
-
-  const statuses = {
-
-    draft: 'Draft',
-
-    ready: 'Siap',
-
-    active: 'Aktif',
-
-    completed: 'Selesai'
-
-  };
-
-  return statuses[status] || status;
-
-}
-
-
-// Jalankan
-if (assessmentId && user) {
-
-  await loadAssessment();
-
-}
-const kelolaSoalButton =
-  document.getElementById('kelolaSoalButton');
 
 kelolaSoalButton.addEventListener(
   'click',
@@ -219,30 +214,65 @@ kelolaSoalButton.addEventListener(
   }
 );
 
-// ===============================
-// LOGOUT
-// ===============================
+pengaturanButton.addEventListener(
+  'click',
+  () => {
+    window.location.href =
+      `pengaturan-asesmen.html?id=${assessmentId}`;
+  }
+);
+
+kembaliButton.addEventListener(
+  'click',
+  () => {
+    window.location.href =
+      'asesmen.html';
+  }
+);
 
 logoutButton.addEventListener(
   'click',
   async () => {
-
-    const { error } =
-      await supabase.auth.signOut();
-
-    if (error) {
-
-      alert(
-        'Gagal keluar: ' +
-        error.message
-      );
-
-      return;
-
-    }
+    await supabase.auth.signOut();
 
     window.location.href =
       'index.html';
-
   }
 );
+
+aktifkanButton.addEventListener(
+  'click',
+  () => {
+    alert(
+      'Fitur aktivasi asesmen akan kita buat pada tahap berikutnya.'
+    );
+  }
+);
+
+async function init() {
+  if (!assessmentId) {
+    alert(
+      'ID asesmen tidak ditemukan.'
+    );
+
+    window.location.href =
+      'asesmen.html';
+
+    return;
+  }
+
+  const user =
+    await checkLogin();
+
+  if (!user) {
+    return;
+  }
+
+  await loadTeacherProfile(user);
+
+  await loadAssessment(user);
+
+  await loadQuestionCount();
+}
+
+init();
