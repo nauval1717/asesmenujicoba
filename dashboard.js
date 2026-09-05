@@ -6,153 +6,114 @@ import { supabase } from "./supabase.js";
 
 
 // ===============================
-// LOGOUT
+// SAAT HALAMAN SUDAH SIAP
 // ===============================
-function setupLogout() {
+document.addEventListener("DOMContentLoaded", async () => {
 
-  const logoutButton = document.getElementById("logoutButton");
+  console.log("Dashboard JS berjalan.");
 
-  if (!logoutButton) {
-    console.error("Tombol logout tidak ditemukan.");
+  // ===============================
+  // CEK USER
+  // ===============================
+  const {
+    data: { user },
+    error: userError
+  } = await supabase.auth.getUser();
+
+  console.log("USER:", user);
+  console.log("USER ERROR:", userError);
+
+  // Jangan langsung dilempar ke login.
+  // Kalau tidak ada user, tampilkan pesan di console.
+  if (!user) {
+
+    console.error("User tidak ditemukan.");
+
     return;
   }
 
-  logoutButton.addEventListener("click", async function () {
 
-    const yakin = window.confirm(
-      "Apakah Anda yakin ingin keluar?"
-    );
-
-    if (!yakin) {
-      return;
-    }
-
-    logoutButton.disabled = true;
-    logoutButton.textContent = "🚪 Keluar...";
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-
-      console.error("Gagal logout:", error);
-
-      alert(
-        "Terjadi kesalahan saat keluar. Silakan coba lagi."
-      );
-
-      logoutButton.disabled = false;
-      logoutButton.textContent = "🚪 Keluar";
-
-      return;
-    }
-
-    window.location.href = "index.html";
-  });
-}
-
-
-// ===============================
-// CEK LOGIN
-// ===============================
-async function checkLogin() {
-
-  const { data, error } =
-    await supabase.auth.getUser();
-
-  if (error) {
-
-    console.error(
-      "Gagal memeriksa login:",
-      error
-    );
-
-    // JANGAN otomatis keluar
-    return null;
-  }
-
-  if (!data.user) {
-
-    console.warn("Belum ada user yang login.");
-
-    // JANGAN otomatis keluar
-    return null;
-  }
-
-  return data.user;
-}
-
-
-// ===============================
-// LOAD PROFIL GURU
-// ===============================
-async function loadTeacherProfile(user) {
-
-  const teacherNameElement =
+  // ===============================
+  // TAMPILKAN NAMA GURU
+  // ===============================
+  const teacherName =
     document.getElementById("teacherName");
 
-  if (!teacherNameElement || !user) {
-    return;
-  }
+  if (teacherName) {
 
-  const { data, error } =
-    await supabase
+    const {
+      data: profile,
+      error: profileError
+    } = await supabase
       .from("profiles")
       .select("full_name")
       .eq("id", user.id)
       .maybeSingle();
 
-  if (error) {
+    if (profileError) {
 
-    console.error(
-      "Gagal mengambil profil guru:",
-      error
-    );
+      console.error(
+        "Gagal mengambil profil:",
+        profileError
+      );
 
-    teacherNameElement.textContent = "Guru";
+    } else if (profile) {
 
-    return;
+      teacherName.textContent =
+        profile.full_name || "Guru";
+    }
   }
 
-  teacherNameElement.textContent =
-    data?.full_name || "Guru";
-}
 
+  // ===============================
+  // LOGOUT
+  // ===============================
+  const logoutButton =
+    document.getElementById("logoutButton");
 
-// ===============================
-// INISIALISASI
-// ===============================
-async function initDashboard() {
+  if (logoutButton) {
 
-  // Pasang logout setelah halaman siap
-  setupLogout();
+    logoutButton.addEventListener(
+      "click",
+      async () => {
 
-  // Cek login
-  const user = await checkLogin();
+        const yakin = window.confirm(
+          "Apakah Anda yakin ingin keluar?"
+        );
 
-  if (!user) {
-    console.warn(
-      "Dashboard dibuka tanpa user aktif."
+        if (!yakin) {
+          return;
+        }
+
+        logoutButton.disabled = true;
+        logoutButton.textContent =
+          "🚪 Keluar...";
+
+        const { error } =
+          await supabase.auth.signOut();
+
+        if (error) {
+
+          console.error(
+            "Gagal logout:",
+            error
+          );
+
+          alert(
+            "Gagal keluar: " +
+            error.message
+          );
+
+          logoutButton.disabled = false;
+          logoutButton.textContent =
+            "🚪 Keluar";
+
+          return;
+        }
+
+        window.location.href = "index.html";
+      }
     );
-    return;
   }
 
-  // Tampilkan nama guru
-  await loadTeacherProfile(user);
-}
-
-
-// ===============================
-// JALANKAN SETELAH DOM SIAP
-// ===============================
-if (document.readyState === "loading") {
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    initDashboard
-  );
-
-} else {
-
-  initDashboard();
-
-}
+});
