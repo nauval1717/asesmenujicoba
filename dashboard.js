@@ -11,27 +11,31 @@ import { supabase } from "./supabase.js";
 
 function setupLogout() {
   const logoutButton = document.getElementById("logoutButton");
+  const modal = document.getElementById("logoutModal");
+  const cancelBtn = document.getElementById("cancelLogout");
+  const confirmBtn = document.getElementById("confirmLogout");
 
-  if (!logoutButton) {
-    console.error("Tombol logout tidak ditemukan.");
+  if (!logoutButton || !modal || !cancelBtn || !confirmBtn) {
+    console.error("Tombol logout atau modal tidak ditemukan.");
     return;
   }
 
-  logoutButton.addEventListener("click", async () => {
+  // Tampilkan modal saat tombol logout diklik
+  logoutButton.addEventListener("click", () => {
+    modal.style.display = "flex";
+  });
 
-    // Konfirmasi sebelum logout
-    const yakin = window.confirm(
-      "Apakah Anda yakin ingin keluar?"
-    );
+  // Tutup modal jika tombol Batal diklik
+  cancelBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
 
-    // Jika pilih Batal / Tidak
-    if (!yakin) {
-      return;
-    }
+  // Jalankan logout jika tombol Ya, Keluar diklik
+  confirmBtn.addEventListener("click", async () => {
 
     // Ubah tombol sementara
-    logoutButton.disabled = true;
-    logoutButton.textContent = "🚪 Keluar...";
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "🚪 Keluar...";
 
     // Logout dari Supabase
     const { error } = await supabase.auth.signOut();
@@ -43,8 +47,8 @@ function setupLogout() {
         "Terjadi kesalahan saat keluar. Silakan coba lagi."
       );
 
-      logoutButton.disabled = false;
-      logoutButton.textContent = "🚪 Keluar";
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Ya, Keluar";
 
       return;
     }
