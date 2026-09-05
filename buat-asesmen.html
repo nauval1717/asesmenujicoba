@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Asesmen - Asesmen Online</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+  <div class="dashboard">
+
+    <aside class="sidebar">
+
+      <div class="logo">
+        <h2>Asesmen Online</h2>
+        <p>Dashboard Guru</p>
+      </div>
+
+      <nav>
+        <a href="dashboard.html" class="menu">🏠 Dashboard</a>
+        <a href="asesmen.html" class="menu active">📋 Asesmen</a>
+        <a href="#" class="menu">📚 Bank Soal</a>
+        <a href="#" class="menu">👨‍🎓 Siswa</a>
+        <a href="#" class="menu">🏫 Kelas</a>
+        <a href="#" class="menu">📊 Hasil</a>
+        <a href="#" class="menu">📈 Analisis Soal</a>
+        <a href="#" class="menu">⚙️ Pengaturan</a>
+      </nav>
+
+      <button id="logoutButton" class="logout">
+        🚪 Keluar
+      </button>
+
+    </aside>
+
+
+    <main class="main-content">
+
+      <header class="topbar">
+
+        <div>
+          <h1>Buat Asesmen</h1>
+          <p>Buat asesmen baru untuk siswa.</p>
+        </div>
+
+        <div class="teacher-info">
+          👤 <span id="teacherName">Guru</span>
+        </div>
+
+      </header>
+
+
+      <section class="content-card">
+
+        <div class="page-header">
+
+          <div>
+            <h2>Informasi Asesmen</h2>
+            <p>Isi informasi dasar asesmen terlebih dahulu.</p>
+          </div>
+
+        </div>
+
+
+        <form id="asesmenForm">
+
+          <div class="form-group">
+            <label for="title">Nama Asesmen</label>
+            <input
+              type="text"
+              id="title"
+              placeholder="Contoh: Penilaian Harian IPA Bab 1"
+              required
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="type">Jenis Asesmen</label>
+
+            <select id="type" required>
+              <option value="">-- Pilih Jenis --</option>
+              <option value="daily">Penilaian Harian</option>
+              <option value="midterm">PTS</option>
+              <option value="final">PAS</option>
+              <option value="other">Lainnya</option>
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+            <label for="subject">Mata Pelajaran</label>
+
+            <select id="subject" required>
+              <option value="">-- Pilih Mata Pelajaran --</option>
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+            <label for="class">Kelas</label>
+
+            <select id="class" required>
+              <option value="">-- Pilih Kelas --</option>
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+            <label for="description">Deskripsi</label>
+
+            <textarea
+              id="description"
+              rows="4"
+              placeholder="Deskripsi atau petunjuk asesmen..."
+            ></textarea>
+
+          </div>
+
+
+          <div class="form-group">
+            <label for="duration">Durasi (menit)</label>
+
+            <input
+              type="number"
+              id="duration"
+              min="1"
+              placeholder="Contoh: 60"
+            >
+
+          </div>
+
+
+          <div class="form-actions">
+
+            <button
+              type="button"
+              class="secondary-button"
+              onclick="window.location.href='asesmen.html'"
+            >
+              Batal
+            </button>
+
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Simpan Asesmen
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <script type="module" src="buat-asesmen.js"></script>
+
+</body>
+</html>
